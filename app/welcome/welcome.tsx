@@ -3,43 +3,52 @@ import logoLight from "./logo-light.svg";
 
 export function Welcome() {
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
-      <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
-        <header className="flex flex-col items-center gap-9">
-          <div className="w-[500px] max-w-[100vw] p-4">
-            <img
-              src={logoLight}
-              alt="React Router"
-              className="block w-full dark:hidden"
-            />
-            <img
-              src={logoDark}
-              alt="React Router"
-              className="hidden w-full dark:block"
-            />
-          </div>
-        </header>
-        <div className="max-w-[300px] w-full space-y-6 px-4">
-          <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            <p className="leading-6 text-gray-700 dark:text-gray-200 text-center">
-              What&apos;s next?
-            </p>
-            <ul>
-              {resources.map(({ href, text, icon }) => (
-                <li key={href}>
-                  <a
-                    className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {icon}
+    <main className="flex items-center justify-center pt-16 pb-8">
+      <div className="w-full max-w-4xl p-6">
+        <div className="rounded-2xl border p-8 shadow-sm bg-white dark:bg-slate-900">
+          <header className="flex items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20">
+                <img src={logoLight} alt="logo" className="block w-full dark:hidden" />
+                <img src={logoDark} alt="logo" className="hidden w-full dark:block" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">Tools</h1>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Handy utilities: copy text, generate QR codes, and render templates.</p>
+              </div>
+            </div>
+
+            <div>
+              <a
+                href="/tools"
+                className="inline-block bg-slate-800 text-white px-4 py-2 rounded-md hover:opacity-95"
+              >
+                Open Tools
+              </a>
+            </div>
+          </header>
+
+          <section className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="col-span-2">
+              <h2 className="text-lg font-semibold">What you can do</h2>
+              <ul className="mt-3 list-disc pl-5 text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                <li>Quickly copy text inputs to clipboard.</li>
+                <li>Generate QR codes from any string and open full-size images.</li>
+                <li>Create templated output using simple {"{{variable}}"} placeholders and export variables as JSON.</li>
+              </ul>
+            </div>
+
+            <div className="p-4 border rounded">
+              <h3 className="font-medium">Links</h3>
+              <nav className="mt-2 flex flex-col gap-2">
+                {resources.map(({ href, text }) => (
+                  <a key={href} className="text-sm text-sky-600" href={href} target="_blank" rel="noreferrer">
                     {text}
                   </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+                ))}
+              </nav>
+            </div>
+          </section>
         </div>
       </div>
     </main>
