@@ -14,8 +14,49 @@ type Scenario = {
 };
 
 function toNumber(value: string) {
-  const parsed = Number(value);
+  const raw = String(value ?? "").trim().replace(/\s+/g, "");
+  if (!raw) return 0;
+
+  const hasComma = raw.includes(",");
+  const hasDot = raw.includes(".");
+  let normalized = raw;
+
+  if (hasComma && hasDot) {
+    const lastComma = raw.lastIndexOf(",");
+    const lastDot = raw.lastIndexOf(".");
+    if (lastComma > lastDot) {
+      normalized = raw.replace(/\./g, "").replace(/,/g, ".");
+    } else {
+      normalized = raw.replace(/,/g, "");
+    }
+  } else if (hasComma) {
+    if (/^-?\d{1,3}(,\d{3})+$/.test(raw)) {
+      normalized = raw.replace(/,/g, "");
+    } else {
+      const firstComma = raw.indexOf(",");
+      normalized = `${raw.slice(0, firstComma).replace(/,/g, "")}.${raw.slice(firstComma + 1).replace(/,/g, "")}`;
+    }
+  } else if (hasDot) {
+    if (/^-?\d{1,3}(\.\d{3})+$/.test(raw)) {
+      normalized = raw.replace(/\./g, "");
+    } else {
+      const firstDot = raw.indexOf(".");
+      normalized = `${raw.slice(0, firstDot).replace(/\./g, "")}.${raw.slice(firstDot + 1).replace(/\./g, "")}`;
+    }
+  }
+
+  const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatInputNumber(value: string, maximumFractionDigits = 8) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  const parsed = toNumber(raw);
+  return new Intl.NumberFormat(undefined, {
+    useGrouping: true,
+    maximumFractionDigits,
+  }).format(parsed);
 }
 
 function buildScenarios(
@@ -171,27 +212,33 @@ export default function PnlPage() {
 
         if (typeof parsed.asset === "string") setAsset(parsed.asset.toUpperCase());
         if (typeof parsed.currency === "string") setCurrency(parsed.currency.toUpperCase());
-        if (parsed.feePercent !== undefined) setFeePercent(String(parsed.feePercent));
+        if (parsed.feePercent !== undefined) setFeePercent(formatInputNumber(String(parsed.feePercent), 8));
         if (Array.isArray(parsed.positions)) {
           const normalized = parsed.positions
             .map((p: any) => ({
-              quantity: typeof p?.quantity === "string" ? p.quantity : String(p?.quantity ?? ""),
-              entryPrice: typeof p?.entryPrice === "string" ? p.entryPrice : String(p?.entryPrice ?? ""),
+              quantity:
+                p?.quantity === undefined || p?.quantity === null || String(p?.quantity).trim() === ""
+                  ? ""
+                  : formatInputNumber(String(p?.quantity), 8),
+              entryPrice:
+                p?.entryPrice === undefined || p?.entryPrice === null || String(p?.entryPrice).trim() === ""
+                  ? ""
+                  : formatInputNumber(String(p?.entryPrice), 8),
             }))
             .filter((p: Position) => p.quantity !== "" || p.entryPrice !== "");
           setPositions(normalized.length ? normalized : [{ quantity: "", entryPrice: "" }]);
         }
 
         if (parsed.profit && typeof parsed.profit === "object") {
-          if (parsed.profit.start !== undefined) setProfitStart(String(parsed.profit.start));
-          if (parsed.profit.end !== undefined) setProfitEnd(String(parsed.profit.end));
-          if (parsed.profit.step !== undefined) setProfitStep(String(parsed.profit.step));
+          if (parsed.profit.start !== undefined) setProfitStart(formatInputNumber(String(parsed.profit.start), 8));
+          if (parsed.profit.end !== undefined) setProfitEnd(formatInputNumber(String(parsed.profit.end), 8));
+          if (parsed.profit.step !== undefined) setProfitStep(formatInputNumber(String(parsed.profit.step), 8));
         }
 
         if (parsed.loss && typeof parsed.loss === "object") {
-          if (parsed.loss.start !== undefined) setLossStart(String(parsed.loss.start));
-          if (parsed.loss.end !== undefined) setLossEnd(String(parsed.loss.end));
-          if (parsed.loss.step !== undefined) setLossStep(String(parsed.loss.step));
+          if (parsed.loss.start !== undefined) setLossStart(formatInputNumber(String(parsed.loss.start), 8));
+          if (parsed.loss.end !== undefined) setLossEnd(formatInputNumber(String(parsed.loss.end), 8));
+          if (parsed.loss.step !== undefined) setLossStep(formatInputNumber(String(parsed.loss.step), 8));
         }
 
         setStatus("Imported data from file.");
@@ -260,11 +307,13 @@ export default function PnlPage() {
 
           <div className="mt-4">
             <label className="block text-sm font-medium mb-2">Buy Positions</label>
+            <p className="text-xs text-slate-500 mb-2">You can enter numbers like 1,234.56 or 1.234,56.</p>
             {positions.map((position, index) => (
               <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2 items-center">
                 <input
                   value={position.quantity}
                   onChange={(e) => updatePosition(index, "quantity", e.target.value)}
+                  onBlur={(e) => updatePosition(index, "quantity", formatInputNumber(e.target.value, 8))}
                   className="sm:col-span-4 p-2 border rounded"
                   placeholder={`Quantity (${asset || "ASSET"})`}
                   inputMode="decimal"
@@ -272,6 +321,7 @@ export default function PnlPage() {
                 <input
                   value={position.entryPrice}
                   onChange={(e) => updatePosition(index, "entryPrice", e.target.value)}
+                  onBlur={(e) => updatePosition(index, "entryPrice", formatInputNumber(e.target.value, 8))}
                   className="sm:col-span-5 p-2 border rounded"
                   placeholder={`Entry price (${currency || "USD"})`}
                   inputMode="decimal"
@@ -320,9 +370,9 @@ export default function PnlPage() {
         <div className="p-4 border rounded">
           <h2 className="text-lg font-semibold mb-3">Profit Scenarios</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input value={profitStart} onChange={(e) => setProfitStart(e.target.value)} className="p-2 border rounded" placeholder="Start" inputMode="decimal" />
-            <input value={profitEnd} onChange={(e) => setProfitEnd(e.target.value)} className="p-2 border rounded" placeholder="End" inputMode="decimal" />
-            <input value={profitStep} onChange={(e) => setProfitStep(e.target.value)} className="p-2 border rounded" placeholder="Step" inputMode="decimal" />
+            <input value={profitStart} onChange={(e) => setProfitStart(e.target.value)} onBlur={(e) => setProfitStart(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Start" inputMode="decimal" />
+            <input value={profitEnd} onChange={(e) => setProfitEnd(e.target.value)} onBlur={(e) => setProfitEnd(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="End" inputMode="decimal" />
+            <input value={profitStep} onChange={(e) => setProfitStep(e.target.value)} onBlur={(e) => setProfitStep(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Step" inputMode="decimal" />
           </div>
           <p className="text-xs text-slate-500 mt-2">Example: 130 → 180 with step 5</p>
         </div>
@@ -330,9 +380,9 @@ export default function PnlPage() {
         <div className="p-4 border rounded">
           <h2 className="text-lg font-semibold mb-3">Loss Scenarios</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input value={lossStart} onChange={(e) => setLossStart(e.target.value)} className="p-2 border rounded" placeholder="Start" inputMode="decimal" />
-            <input value={lossEnd} onChange={(e) => setLossEnd(e.target.value)} className="p-2 border rounded" placeholder="End" inputMode="decimal" />
-            <input value={lossStep} onChange={(e) => setLossStep(e.target.value)} className="p-2 border rounded" placeholder="Step" inputMode="decimal" />
+            <input value={lossStart} onChange={(e) => setLossStart(e.target.value)} onBlur={(e) => setLossStart(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Start" inputMode="decimal" />
+            <input value={lossEnd} onChange={(e) => setLossEnd(e.target.value)} onBlur={(e) => setLossEnd(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="End" inputMode="decimal" />
+            <input value={lossStep} onChange={(e) => setLossStep(e.target.value)} onBlur={(e) => setLossStep(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Step" inputMode="decimal" />
           </div>
           <p className="text-xs text-slate-500 mt-2">Example: 120 → 50 with step 5</p>
         </div>
