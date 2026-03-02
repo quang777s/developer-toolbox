@@ -12,7 +12,8 @@ export default function Home() {
         <h1 className="text-4xl font-bold">Developer Toolbox</h1>
         <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
           A growing collection of developer utilities. Start with Template
-          Studio and Curl Runner, and add more tools over time.
+          Studio, Profit Calculator, and Curl Runner, and add more tools over
+          time.
         </p>
         <div className="mt-6">
           <Link
@@ -20,6 +21,12 @@ export default function Home() {
             className="inline-block px-5 py-2 bg-sky-600 text-white rounded-lg"
           >
             Open Template Studio
+          </Link>
+          <Link
+            to="/profit-calculator"
+            className="ml-3 inline-block px-5 py-2 bg-amber-600 text-white rounded-lg"
+          >
+            Open Profit Calculator
           </Link>
           <Link
             to="/curl"
@@ -55,6 +62,18 @@ export default function Home() {
           </p>
           <div className="mt-4">
             <Link to="/template-studio" className="inline-block px-4 py-2 bg-sky-600 text-white rounded text-sm">Open Template Studio</Link>
+          </div>
+        </article>
+
+        <article className="p-4 border rounded">
+          <h3 className="font-semibold">Profit Calculator</h3>
+          <p className="text-sm text-gray-600 mt-2">
+            Add multiple buy entries, calculate average entry, and generate
+            profit/loss tables across price ranges for crypto, gold, silver,
+            and more.
+          </p>
+          <div className="mt-4">
+            <Link to="/profit-calculator" className="inline-block px-4 py-2 bg-amber-600 text-white rounded text-sm">Open Profit Calculator</Link>
           </div>
         </article>
 
