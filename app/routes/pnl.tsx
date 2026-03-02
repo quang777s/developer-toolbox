@@ -7,6 +7,11 @@ type Position = {
   entryPrice: string;
 };
 
+type SellPosition = {
+  quantity: string;
+  sellPrice: string;
+};
+
 type Scenario = {
   price: number;
   pnl: number;
@@ -30,14 +35,14 @@ function toNumber(value: string) {
       normalized = raw.replace(/,/g, "");
     }
   } else if (hasComma) {
-    if (/^-?\d{1,3}(,\d{3})+$/.test(raw)) {
+    if (raw.split(",").length > 2 && /^-?\d{1,3}(,\d{3})+$/.test(raw)) {
       normalized = raw.replace(/,/g, "");
     } else {
       const firstComma = raw.indexOf(",");
       normalized = `${raw.slice(0, firstComma).replace(/,/g, "")}.${raw.slice(firstComma + 1).replace(/,/g, "")}`;
     }
   } else if (hasDot) {
-    if (/^-?\d{1,3}(\.\d{3})+$/.test(raw)) {
+    if (raw.split(".").length > 2 && /^-?\d{1,3}(\.\d{3})+$/.test(raw)) {
       normalized = raw.replace(/\./g, "");
     } else {
       const firstDot = raw.indexOf(".");
@@ -60,25 +65,28 @@ function formatInputNumber(value: string, maximumFractionDigits = 8) {
 }
 
 function buildScenarios(
-  totalQty: number,
-  totalCostWithBuyFee: number,
+  remainingQty: number,
+  remainingCostBasis: number,
+  realizedPnl: number,
+  roiBaseCost: number,
   sellFeePercent: number,
   start: number,
   end: number,
   step: number
 ) {
   const rows: Scenario[] = [];
-  if (totalQty <= 0 || step <= 0) return rows;
+  if (step <= 0) return rows;
 
   const min = Math.min(start, end);
   const max = Math.max(start, end);
   for (let price = min; price <= max + 1e-9; price += step) {
     const roundedPrice = Math.round(price * 1_000_000) / 1_000_000;
-    const grossValue = roundedPrice * totalQty;
+    const grossValue = roundedPrice * remainingQty;
     const sellFee = grossValue * (sellFeePercent / 100);
     const netSellValue = grossValue - sellFee;
-    const pnl = netSellValue - totalCostWithBuyFee;
-    const roi = totalCostWithBuyFee > 0 ? (pnl / totalCostWithBuyFee) * 100 : 0;
+    const unrealizedPnl = netSellValue - remainingCostBasis;
+    const pnl = realizedPnl + unrealizedPnl;
+    const roi = roiBaseCost > 0 ? (pnl / roiBaseCost) * 100 : 0;
     rows.push({ price: roundedPrice, pnl, roi });
   }
   return rows;
@@ -111,6 +119,7 @@ export default function PnlPage() {
     { quantity: "25", entryPrice: "123.3" },
     { quantity: "12.5", entryPrice: "80" },
   ]);
+  const [sellPositions, setSellPositions] = React.useState<SellPosition[]>([]);
 
   const [profitStart, setProfitStart] = React.useState("130");
   const [profitEnd, setProfitEnd] = React.useState("180");
@@ -122,28 +131,67 @@ export default function PnlPage() {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const totals = React.useMemo(() => {
-    let totalQty = 0;
-    let totalCost = 0;
+    let totalBuyQty = 0;
+    let totalBuyCost = 0;
     const fee = Math.max(0, toNumber(feePercent));
     positions.forEach((position) => {
       const qty = toNumber(position.quantity);
       const entry = toNumber(position.entryPrice);
       if (qty > 0 && entry > 0) {
-        totalQty += qty;
+        totalBuyQty += qty;
         const gross = qty * entry;
         const buyFee = gross * (fee / 100);
-        totalCost += gross + buyFee;
+        totalBuyCost += gross + buyFee;
       }
     });
-    const avgEntry = totalQty > 0 ? totalCost / totalQty : 0;
-    return { totalQty, totalCost, avgEntry };
-  }, [positions, feePercent]);
+
+    const avgEntry = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
+
+    let requestedSoldQty = 0;
+    let netSellProceeds = 0;
+    sellPositions.forEach((position) => {
+      const qty = toNumber(position.quantity);
+      const sellPrice = toNumber(position.sellPrice);
+      if (qty > 0 && sellPrice > 0) {
+        requestedSoldQty += qty;
+        const gross = qty * sellPrice;
+        const sellFee = gross * (fee / 100);
+        netSellProceeds += gross - sellFee;
+      }
+    });
+
+    const soldQty = Math.min(requestedSoldQty, totalBuyQty);
+    const realizedCostBasis = soldQty * avgEntry;
+    const remainingQty = Math.max(0, totalBuyQty - soldQty);
+    const remainingCostBasis = Math.max(0, totalBuyCost - realizedCostBasis);
+    const realizedPnl = netSellProceeds - realizedCostBasis;
+    const sellFeeMultiplier = 1 - fee / 100;
+    const breakEvenSellPrice =
+      remainingQty > 0 && sellFeeMultiplier > 0
+        ? (remainingCostBasis - realizedPnl) / (remainingQty * sellFeeMultiplier)
+        : 0;
+
+    return {
+      totalBuyQty,
+      totalBuyCost,
+      avgEntry,
+      requestedSoldQty,
+      soldQty,
+      remainingQty,
+      remainingCostBasis,
+      breakEvenSellPrice,
+      netSellProceeds,
+      realizedPnl,
+    };
+  }, [positions, sellPositions, feePercent]);
 
   const profitScenarios = React.useMemo(
     () =>
       buildScenarios(
-        totals.totalQty,
-        totals.totalCost,
+        totals.remainingQty,
+        totals.remainingCostBasis,
+        totals.realizedPnl,
+        totals.totalBuyCost,
         Math.max(0, toNumber(feePercent)),
         toNumber(profitStart),
         toNumber(profitEnd),
@@ -155,8 +203,10 @@ export default function PnlPage() {
   const lossScenarios = React.useMemo(
     () =>
       buildScenarios(
-        totals.totalQty,
-        totals.totalCost,
+        totals.remainingQty,
+        totals.remainingCostBasis,
+        totals.realizedPnl,
+        totals.totalBuyCost,
         Math.max(0, toNumber(feePercent)),
         toNumber(lossStart),
         toNumber(lossEnd),
@@ -181,12 +231,29 @@ export default function PnlPage() {
     setPositions((previous) => previous.filter((_, currentIndex) => currentIndex !== index));
   }
 
+  function updateSellPosition(index: number, field: keyof SellPosition, value: string) {
+    setSellPositions((previous) => {
+      const copy = previous.slice();
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  }
+
+  function addSellPosition() {
+    setSellPositions((previous) => [...previous, { quantity: "", sellPrice: "" }]);
+  }
+
+  function removeSellPosition(index: number) {
+    setSellPositions((previous) => previous.filter((_, currentIndex) => currentIndex !== index));
+  }
+
   function exportData() {
     const payload = {
       asset,
       currency,
       feePercent,
       positions,
+      sellPositions,
       profit: { start: profitStart, end: profitEnd, step: profitStep },
       loss: { start: lossStart, end: lossEnd, step: lossStep },
     };
@@ -227,6 +294,22 @@ export default function PnlPage() {
             }))
             .filter((p: Position) => p.quantity !== "" || p.entryPrice !== "");
           setPositions(normalized.length ? normalized : [{ quantity: "", entryPrice: "" }]);
+        }
+
+        if (Array.isArray(parsed.sellPositions)) {
+          const normalizedSell = parsed.sellPositions
+            .map((p: any) => ({
+              quantity:
+                p?.quantity === undefined || p?.quantity === null || String(p?.quantity).trim() === ""
+                  ? ""
+                  : formatInputNumber(String(p?.quantity), 8),
+              sellPrice:
+                p?.sellPrice === undefined || p?.sellPrice === null || String(p?.sellPrice).trim() === ""
+                  ? ""
+                  : formatInputNumber(String(p?.sellPrice), 8),
+            }))
+            .filter((p: SellPosition) => p.quantity !== "" || p.sellPrice !== "");
+          setSellPositions(normalizedSell);
         }
 
         if (parsed.profit && typeof parsed.profit === "object") {
@@ -347,22 +430,81 @@ export default function PnlPage() {
           <ul className="space-y-2 text-sm">
             <li>
               <span className="text-slate-600">Total Quantity: </span>
-              <span className="font-medium">{numberFormatter(totals.totalQty, 6)} {asset || "ASSET"}</span>
+              <span className="font-medium">{numberFormatter(totals.totalBuyQty, 6)} {asset || "ASSET"}</span>
             </li>
             <li>
-              <span className="text-slate-600">Total Cost: </span>
-              <span className="font-medium">{currencyFormatter(totals.totalCost, currency || "USD")}</span>
+              <span className="text-slate-600">Total Buy Cost: </span>
+              <span className="font-medium">{currencyFormatter(totals.totalBuyCost, currency || "USD")}</span>
             </li>
             <li>
               <span className="text-slate-600">Average Entry: </span>
               <span className="font-medium">{numberFormatter(totals.avgEntry, 6)} {currency || "USD"}</span>
             </li>
             <li>
+              <span className="text-slate-600">Sold Quantity: </span>
+              <span className="font-medium">{numberFormatter(totals.soldQty, 6)} {asset || "ASSET"}</span>
+            </li>
+            <li>
+              <span className="text-slate-600">Remaining Quantity: </span>
+              <span className="font-medium">{numberFormatter(totals.remainingQty, 6)} {asset || "ASSET"}</span>
+            </li>
+            <li>
+              <span className="text-slate-600">Break-even Sell Price: </span>
+              <span className="font-medium">{numberFormatter(Math.max(0, totals.breakEvenSellPrice), 6)} {currency || "USD"}</span>
+            </li>
+            <li>
+              <span className="text-slate-600">Realized P/L: </span>
+              <span className={`font-medium ${totals.realizedPnl >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                {currencyFormatter(totals.realizedPnl, currency || "USD")}
+              </span>
+            </li>
+            <li>
               <span className="text-slate-600">Fee Applied: </span>
               <span className="font-medium">{numberFormatter(Math.max(0, toNumber(feePercent)), 4)}%</span>
             </li>
           </ul>
-          <p className="text-xs text-slate-500 mt-3">P/L includes buy-side fee on entries and sell-side fee on exit.</p>
+          {totals.requestedSoldQty > totals.totalBuyQty && (
+            <p className="text-xs text-amber-700 mt-2">
+              Sold quantity is capped to total bought quantity for calculation.
+            </p>
+          )}
+          <p className="text-xs text-slate-500 mt-3">P/L includes buy-side fee on buys and sell-side fee on each sell trade (past + scenario exit).</p>
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <div className="p-4 border rounded">
+          <h2 className="text-lg font-semibold mb-3">Sell Positions (Optional)</h2>
+          <p className="text-xs text-slate-500 mb-2">Add historical sells to include realized profit/loss before scenario calculation.</p>
+          {sellPositions.map((position, index) => (
+            <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2 items-center">
+              <input
+                value={position.quantity}
+                onChange={(e) => updateSellPosition(index, "quantity", e.target.value)}
+                onBlur={(e) => updateSellPosition(index, "quantity", formatInputNumber(e.target.value, 8))}
+                className="sm:col-span-4 p-2 border rounded"
+                placeholder={`Sold quantity (${asset || "ASSET"})`}
+                inputMode="decimal"
+              />
+              <input
+                value={position.sellPrice}
+                onChange={(e) => updateSellPosition(index, "sellPrice", e.target.value)}
+                onBlur={(e) => updateSellPosition(index, "sellPrice", formatInputNumber(e.target.value, 8))}
+                className="sm:col-span-5 p-2 border rounded"
+                placeholder={`Sell price (${currency || "USD"})`}
+                inputMode="decimal"
+              />
+              <button
+                onClick={() => removeSellPosition(index)}
+                className="sm:col-span-3 px-3 py-2 bg-red-600 text-white rounded text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button onClick={addSellPosition} className="mt-1 px-3 py-2 bg-slate-800 text-white rounded text-sm">
+            Add sell position
+          </button>
         </div>
       </section>
 
