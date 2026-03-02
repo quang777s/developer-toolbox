@@ -20,7 +20,7 @@ export function Welcome() {
 
             <div>
               <a
-                href="/tools"
+                href="/template-studio"
                 className="inline-block bg-slate-800 text-white px-4 py-2 rounded-md hover:opacity-95"
               >
                 Open Tools

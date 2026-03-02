@@ -31,7 +31,7 @@ function CopyButton({ text, className = "" }: { text: string; className?: string
     }
   }
   return (
-    <button onClick={handle} disabled={!text} className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-slate-800 text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed ${className}`} aria-label="copy" title={done ? "Copied" : "Copy"}>
+    <button onClick={handle} disabled={!text} className={`inline-flex items-center gap-1.5 bg-slate-800 text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed ${className}`} aria-label="copy" title={done ? "Copied" : "Copy"}>
       <CopyIcon />
       <span>{done ? "Copied" : "Copy"}</span>
     </button>
@@ -298,6 +298,11 @@ export default function CurlPage() {
     }
   }
 
+  const substitutedCmd = React.useMemo(() => {
+    const cmd = commands[selectedIndex]?.cmd ?? "";
+    return applyVarsToBody(cmd) ?? cmd;
+  }, [commands, selectedIndex, vars]);
+
   return (
     <main className="pt-16 p-4 container mx-auto">
       <div className="flex items-center justify-between mb-4">
@@ -340,9 +345,19 @@ export default function CurlPage() {
           <label className="block text-sm font-medium">Selected Command</label>
           <div className="mt-2 p-3 border rounded">
             <div className="flex gap-2 items-center mb-2">
-              <CopyButton text={commands[selectedIndex]?.cmd ?? ""} />
-              <button onClick={runSelected} disabled={curlRunning} className="px-3 py-1 bg-slate-800 text-white rounded text-sm">{curlRunning ? "Running..." : "Run"}</button>
+              <CopyButton text={commands[selectedIndex]?.cmd ?? ""} className="px-4 py-2 text-base" />
+              <button onClick={runSelected} disabled={curlRunning} className="px-4 py-2 bg-slate-800 text-white rounded text-base">{curlRunning ? "Running..." : "Run"}</button>
               <label className="inline-flex items-center gap-2 text-sm ml-4"><input type="checkbox" checked={sendRawBody} onChange={(e) => setSendRawBody(e.target.checked)} /> <span>Send raw body</span></label>
+            </div>
+
+            <div className="mb-3">
+              <label className="text-sm">Command (variables applied)</label>
+                <div className="mt-2 flex items-start gap-2">
+                <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm whitespace-pre-wrap break-words"><code>{substitutedCmd || "-"}</code></pre>
+                <div className="pt-2">
+                  <CopyButton text={substitutedCmd ?? ""} className="px-4 py-2 text-base" />
+                </div>
+              </div>
             </div>
 
             <div className="mb-3">
@@ -362,7 +377,7 @@ export default function CurlPage() {
               <label className="text-sm">Response</label>
               <div className="mt-2">
                 <div className="mb-2 flex items-center gap-2">
-                  <CopyButton text={curlOutput} />
+                  <CopyButton text={curlOutput} className="px-4 py-2 text-base" />
                   <span className="text-sm text-slate-600">{curlStatusCode ? `Status ${curlStatusCode}` : ""}</span>
                 </div>
                 <div className="mb-2">
@@ -391,11 +406,11 @@ export default function CurlPage() {
                                 });
                               }
                             }}
-                            className="px-2 py-1 bg-emerald-600 text-white rounded text-sm"
+                            className="px-4 py-2 bg-emerald-600 text-white rounded text-base"
                           >
                             Copy token
                           </button>
-                          <CopyButton text={JSON.stringify(responseJson, null, 2)} />
+                          <CopyButton text={JSON.stringify(responseJson, null, 2)} className="px-4 py-2 text-base" />
                         </div>
                         <div>
                           <JsonValue value={responseJson} />
@@ -410,6 +425,9 @@ export default function CurlPage() {
                 <div className="mt-3">
                   <label className="text-sm">Request sent (inspect)</label>
                   <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm"><code>{lastRequestOptions ? JSON.stringify(lastRequestOptions, null, 2) : "-"}</code></pre>
+                  <div className="mt-3 flex justify-end">
+                    <button onClick={runSelected} disabled={curlRunning} className="px-4 py-2 bg-slate-800 text-white rounded text-base">{curlRunning ? "Running..." : "Run"}</button>
+                  </div>
                 </div>
               </div>
             </div>

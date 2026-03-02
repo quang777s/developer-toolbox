@@ -526,7 +526,7 @@ export default function Tools() {
     <main className="pt-16 p-4 container mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">Tools</h1>
+          <h1 className="text-2xl font-bold">Template Studio</h1>
           <Link to="/" className="text-sm text-sky-600 hover:underline">
             ← Back to Home
           </Link>
@@ -726,5 +726,5 @@ export default function Tools() {
 }
 
 export function meta(_: Route.MetaArgs) {
-  return [{ title: "Tools" }];
+  return [{ title: "Template Studio" }];
 }
