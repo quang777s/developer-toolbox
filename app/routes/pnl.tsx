@@ -35,7 +35,7 @@ function toNumber(value: string) {
       normalized = raw.replace(/,/g, "");
     }
   } else if (hasComma) {
-    if (raw.split(",").length > 2 && /^-?\d{1,3}(,\d{3})+$/.test(raw)) {
+    if (/^-?\d{1,3}(,\d{3})+$/.test(raw) && !/^-?0,\d{3}$/.test(raw)) {
       normalized = raw.replace(/,/g, "");
     } else {
       const firstComma = raw.indexOf(",");
@@ -58,7 +58,7 @@ function formatInputNumber(value: string, maximumFractionDigits = 8) {
   const raw = String(value ?? "").trim();
   if (!raw) return "";
   const parsed = toNumber(raw);
-  return new Intl.NumberFormat(undefined, {
+  return new Intl.NumberFormat("en-US", {
     useGrouping: true,
     maximumFractionDigits,
   }).format(parsed);
