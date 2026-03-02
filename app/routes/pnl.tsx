@@ -215,6 +215,8 @@ export default function PnlPage() {
     [totals, feePercent, lossStart, lossEnd, lossStep]
   );
 
+  const feeRate = Math.max(0, toNumber(feePercent)) / 100;
+
   function updatePosition(index: number, field: keyof Position, value: string) {
     setPositions((previous) => {
       const copy = previous.slice();
@@ -391,33 +393,45 @@ export default function PnlPage() {
           <div className="mt-4">
             <label className="block text-sm font-medium mb-2">Buy Positions</label>
             <p className="text-xs text-slate-500 mb-2">You can enter numbers like 1,234.56 or 1.234,56.</p>
-            {positions.map((position, index) => (
-              <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2 items-center">
-                <input
-                  value={position.quantity}
-                  onChange={(e) => updatePosition(index, "quantity", e.target.value)}
-                  onBlur={(e) => updatePosition(index, "quantity", formatInputNumber(e.target.value, 8))}
-                  className="sm:col-span-4 p-2 border rounded"
-                  placeholder={`Quantity (${asset || "ASSET"})`}
-                  inputMode="decimal"
-                />
-                <input
-                  value={position.entryPrice}
-                  onChange={(e) => updatePosition(index, "entryPrice", e.target.value)}
-                  onBlur={(e) => updatePosition(index, "entryPrice", formatInputNumber(e.target.value, 8))}
-                  className="sm:col-span-5 p-2 border rounded"
-                  placeholder={`Entry price (${currency || "USD"})`}
-                  inputMode="decimal"
-                />
-                <button
-                  onClick={() => removePosition(index)}
-                  className="sm:col-span-3 px-3 py-2 bg-red-600 text-white rounded text-sm"
-                  disabled={positions.length === 1}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
+            {positions.map((position, index) => {
+              const qty = toNumber(position.quantity);
+              const entry = toNumber(position.entryPrice);
+              const grossCost = qty * entry;
+              const costWithFee = grossCost * (1 + feeRate);
+
+              return (
+                <React.Fragment key={index}>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-1 items-center">
+                    <input
+                      value={position.quantity}
+                      onChange={(e) => updatePosition(index, "quantity", e.target.value)}
+                      onBlur={(e) => updatePosition(index, "quantity", formatInputNumber(e.target.value, 8))}
+                      className="sm:col-span-4 p-2 border rounded"
+                      placeholder={`Quantity (${asset || "ASSET"})`}
+                      inputMode="decimal"
+                    />
+                    <input
+                      value={position.entryPrice}
+                      onChange={(e) => updatePosition(index, "entryPrice", e.target.value)}
+                      onBlur={(e) => updatePosition(index, "entryPrice", formatInputNumber(e.target.value, 8))}
+                      className="sm:col-span-5 p-2 border rounded"
+                      placeholder={`Entry price (${currency || "USD"})`}
+                      inputMode="decimal"
+                    />
+                    <button
+                      onClick={() => removePosition(index)}
+                      className="sm:col-span-3 px-3 py-2 bg-red-600 text-white rounded text-sm"
+                      disabled={positions.length === 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-2">
+                    Cost: {currencyFormatter(grossCost, currency || "USD")} · Cost incl fee: {currencyFormatter(costWithFee, currency || "USD")}
+                  </p>
+                </React.Fragment>
+              );
+            })}
 
             <button onClick={addPosition} className="mt-1 px-3 py-2 bg-slate-800 text-white rounded text-sm">
               Add position
@@ -476,32 +490,44 @@ export default function PnlPage() {
         <div className="p-4 border rounded">
           <h2 className="text-lg font-semibold mb-3">Sell Positions (Optional)</h2>
           <p className="text-xs text-slate-500 mb-2">Add historical sells to include realized profit/loss before scenario calculation.</p>
-          {sellPositions.map((position, index) => (
-            <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2 items-center">
-              <input
-                value={position.quantity}
-                onChange={(e) => updateSellPosition(index, "quantity", e.target.value)}
-                onBlur={(e) => updateSellPosition(index, "quantity", formatInputNumber(e.target.value, 8))}
-                className="sm:col-span-4 p-2 border rounded"
-                placeholder={`Sold quantity (${asset || "ASSET"})`}
-                inputMode="decimal"
-              />
-              <input
-                value={position.sellPrice}
-                onChange={(e) => updateSellPosition(index, "sellPrice", e.target.value)}
-                onBlur={(e) => updateSellPosition(index, "sellPrice", formatInputNumber(e.target.value, 8))}
-                className="sm:col-span-5 p-2 border rounded"
-                placeholder={`Sell price (${currency || "USD"})`}
-                inputMode="decimal"
-              />
-              <button
-                onClick={() => removeSellPosition(index)}
-                className="sm:col-span-3 px-3 py-2 bg-red-600 text-white rounded text-sm"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+          {sellPositions.map((position, index) => {
+            const qty = toNumber(position.quantity);
+            const sell = toNumber(position.sellPrice);
+            const grossValue = qty * sell;
+            const netValue = grossValue * (1 - feeRate);
+
+            return (
+              <React.Fragment key={index}>
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-1 items-center">
+                  <input
+                    value={position.quantity}
+                    onChange={(e) => updateSellPosition(index, "quantity", e.target.value)}
+                    onBlur={(e) => updateSellPosition(index, "quantity", formatInputNumber(e.target.value, 8))}
+                    className="sm:col-span-4 p-2 border rounded"
+                    placeholder={`Sold quantity (${asset || "ASSET"})`}
+                    inputMode="decimal"
+                  />
+                  <input
+                    value={position.sellPrice}
+                    onChange={(e) => updateSellPosition(index, "sellPrice", e.target.value)}
+                    onBlur={(e) => updateSellPosition(index, "sellPrice", formatInputNumber(e.target.value, 8))}
+                    className="sm:col-span-5 p-2 border rounded"
+                    placeholder={`Sell price (${currency || "USD"})`}
+                    inputMode="decimal"
+                  />
+                  <button
+                    onClick={() => removeSellPosition(index)}
+                    className="sm:col-span-3 px-3 py-2 bg-red-600 text-white rounded text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mb-2">
+                  Value: {currencyFormatter(grossValue, currency || "USD")} · Net after fee: {currencyFormatter(netValue, currency || "USD")}
+                </p>
+              </React.Fragment>
+            );
+          })}
           <button onClick={addSellPosition} className="mt-1 px-3 py-2 bg-slate-800 text-white rounded text-sm">
             Add sell position
           </button>
