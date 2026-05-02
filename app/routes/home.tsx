@@ -34,6 +34,12 @@ export default function Home() {
           >
             Open Curl Runner
           </Link>
+          <Link
+            to="/loto"
+            className="ml-3 inline-block px-5 py-2 bg-red-600 text-white rounded-lg"
+          >
+            Open Lô tô
+          </Link>
         </div>
       </header>
 
@@ -86,6 +92,17 @@ export default function Home() {
           </p>
           <div className="mt-4">
             <Link to="/curl" className="inline-block px-4 py-2 bg-emerald-600 text-white rounded text-sm">Open Curl Runner</Link>
+          </div>
+        </article>
+
+        <article className="p-4 border rounded">
+          <h3 className="font-semibold">Lô tô</h3>
+          <p className="text-sm text-gray-600 mt-2">
+            Trò chơi Xổ số Việt Nam. Gọi các số từ 1 đến 90 một cách ngẫu nhiên.
+            Tùy chỉnh thời gian chờ giữa các lần gọi số và thưởng thức âm thanh độc nhất.
+          </p>
+          <div className="mt-4">
+            <Link to="/loto" className="inline-block px-4 py-2 bg-red-600 text-white rounded text-sm">Open Lô tô</Link>
           </div>
         </article>
       </section>

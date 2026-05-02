@@ -6,6 +6,7 @@ const routes: RouteConfig = [
 	{ path: "tools", file: "routes/tools-redirect.tsx" },
 	{ path: "profit-calculator", file: "routes/pnl.tsx" },
 	{ path: "curl", file: "routes/curl.tsx" },
+	{ path: "loto", file: "routes/loto.tsx" },
 ];
 
 export default routes;
