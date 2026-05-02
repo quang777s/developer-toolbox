@@ -12,7 +12,7 @@ export default function LoTo() {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [isRunning, setIsRunning] = useState(false);
-  const [delay, setDelay] = useState(3);
+  const [delay, setDelay] = useState(1);
   const [gameStarted, setGameStarted] = useState(false);
   const [playStartSound, setPlayStartSound] = useState(true);
   const [lastFunnySoundThreshold, setLastFunnySoundThreshold] = useState(0);
