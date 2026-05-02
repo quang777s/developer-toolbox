@@ -16,6 +16,7 @@ export default function LoTo() {
   const [gameStarted, setGameStarted] = useState(false);
   const [playStartSound, setPlayStartSound] = useState(true);
   const [lastFunnySoundThreshold, setLastFunnySoundThreshold] = useState(0);
+  const [selectedVoice, setSelectedVoice] = useState("default");
   const audioRef = useRef<HTMLAudioElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioHandlerRef = useRef<(() => void) | null>(null);
@@ -114,8 +115,8 @@ export default function LoTo() {
   };
 
   const playSound = (sound: number | string) => {
-    // Sound file path pattern: /sounds/loto/{sound}.mp3
-    const soundPath = `/sounds/loto/${sound}.mp3`;
+    // Sound file path pattern: /sounds/loto/{voice}/{sound}.mp3
+    const soundPath = `/sounds/loto/${selectedVoice}/${sound}.mp3`;
     if (audioRef.current) {
       audioRef.current.src = soundPath;
       audioRef.current.muted = false;
@@ -331,6 +332,22 @@ export default function LoTo() {
 
           {/* Delay Control */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-4 md:gap-6">
+            <label className="flex items-center gap-2 md:gap-3">
+              <span className="text-gray-700 font-semibold text-sm md:text-base">
+                Giọng nói:
+              </span>
+              <select
+                value={selectedVoice}
+                onChange={(e) => setSelectedVoice(e.target.value)}
+                disabled={gameStarted}
+                className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 rounded-lg disabled:bg-gray-100 disabled:cursor-not-allowed text-base text-gray-900"
+              >
+                <option value="default">Giọng Em Bé</option>
+                <option value="voice2">Giọng Nam</option>
+                <option value="voice3">Giọng 3</option>
+                <option value="voice4">Giọng 4</option>
+              </select>
+            </label>
             <label className="flex items-center gap-2 md:gap-3">
               <span className="text-gray-700 font-semibold text-sm md:text-base">
                 Thời gian chờ (giây):
