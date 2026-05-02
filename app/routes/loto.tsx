@@ -342,7 +342,7 @@ export default function LoTo() {
                 value={delay}
                 onChange={(e) => setDelay(Math.max(1, parseInt(e.target.value) || 1))}
                 disabled={gameStarted}
-                className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 rounded-lg w-20 md:w-24 disabled:bg-gray-100 disabled:cursor-not-allowed text-base"
+                className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 rounded-lg w-20 md:w-24 disabled:bg-gray-100 disabled:cursor-not-allowed text-base text-gray-900"
               />
             </label>
             <label className="flex items-center gap-2 md:gap-3">
