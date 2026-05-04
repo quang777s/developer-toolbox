@@ -5,6 +5,12 @@ export function meta({}: Route.MetaArgs) {
   return [{ title: "Lô tô - Trò chơi Xổ số Việt Nam" }];
 }
 
+interface GameRecord {
+  timestamp: number;
+  numbers: number[];
+  lastFiveNumbers: number[]; // Last 5 numbers called in this game
+}
+
 export default function LoTo() {
   const [numbers, setNumbers] = useState<number[]>(
     Array.from({ length: 90 }, (_, i) => i + 1)
@@ -17,9 +23,51 @@ export default function LoTo() {
   const [playStartSound, setPlayStartSound] = useState(true);
   const [lastFunnySoundThreshold, setLastFunnySoundThreshold] = useState(0);
   const [selectedVoice, setSelectedVoice] = useState("default");
+  const [gameHistory, setGameHistory] = useState<GameRecord[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioHandlerRef = useRef<(() => void) | null>(null);
+
+  // Load game history from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("lotoGameHistory");
+    if (stored) {
+      try {
+        const history = JSON.parse(stored) as GameRecord[];
+        setGameHistory(history);
+      } catch (e) {
+        console.log("Failed to load game history");
+      }
+    }
+  }, []);
+
+  // Save game to history
+  const saveGameToHistory = (numbers: number[]) => {
+    const lastFiveNumbers = numbers.slice(-5); // Get last 5 numbers
+    const newRecord: GameRecord = {
+      timestamp: Date.now(),
+      numbers: [...numbers],
+      lastFiveNumbers,
+    };
+    const updated = [newRecord, ...gameHistory].slice(0, 10); // Keep last 10 games
+    setGameHistory(updated);
+    localStorage.setItem("lotoGameHistory", JSON.stringify(updated));
+  };
+
+  // Get penalized numbers (last 5 from last 5 games only) that should be called late
+  const getPenalizedNumbers = (): number[] => {
+    if (gameHistory.length === 0) return [];
+    const penalized = new Set<number>();
+    // Only consider last 5 games to avoid deprioritizing all 90 numbers
+    const recentGames = gameHistory.slice(0, 5);
+    recentGames.forEach((record) => {
+      if (record.lastFiveNumbers) {
+        record.lastFiveNumbers.forEach((num) => penalized.add(num));
+      }
+    });
+    return Array.from(penalized);
+  };
 
   const startGame = () => {
     const initialNumbers = Array.from({ length: 90 }, (_, i) => i + 1);
@@ -40,11 +88,32 @@ export default function LoTo() {
   const callNextNumber = (numbersToUse: number[]) => {
     if (numbersToUse.length === 0) {
       setIsRunning(false);
+      // Save completed game to history
+      saveGameToHistory(calledNumbers);
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * numbersToUse.length);
-    const nextNumber = numbersToUse[randomIndex];
+    // Get penalized numbers (last 5 from all previous games)
+    const penalizedNumbers = getPenalizedNumbers();
+    const position = calledNumbers.length;
+    const DEPRIORITIZE_THRESHOLD = 60; // Deprioritize penalized numbers until position 60
+    
+    // If we're in early/mid game, try to avoid penalized numbers
+    let selectionPool = numbersToUse;
+    if (position < DEPRIORITIZE_THRESHOLD && penalizedNumbers.length > 0) {
+      const nonPenalizedNumbers = numbersToUse.filter(
+        (num) => !penalizedNumbers.includes(num)
+      );
+      
+      // Only use non-penalized pool if we have options
+      if (nonPenalizedNumbers.length > 0) {
+        selectionPool = nonPenalizedNumbers;
+      }
+    }
+    
+    // Pick random from selection pool
+    const randomIndex = Math.floor(Math.random() * selectionPool.length);
+    const nextNumber = selectionPool[randomIndex];
 
     setCurrentNumber(nextNumber);
     setCalledNumbers((prev) => [...prev, nextNumber]);
@@ -53,10 +122,11 @@ export default function LoTo() {
     playSound(nextNumber);
 
     // Schedule next number after current sound finishes + delay
-    scheduleNextNumber(numbersToUse.filter((n) => n !== nextNumber));
+    // Pass the current position (which will be the next position after this number is added)
+    scheduleNextNumber(numbersToUse.filter((n) => n !== nextNumber), position + 1);
   };
 
-  const scheduleNextNumber = (remainingNumbers: number[]) => {
+  const scheduleNextNumber = (remainingNumbers: number[], callPosition: number) => {
     if (remainingNumbers.length === 0) {
       setIsRunning(false);
       return;
@@ -68,10 +138,61 @@ export default function LoTo() {
       }
       audioHandlerRef.current = null;
 
-      // Schedule next number with delay
-      timerRef.current = setTimeout(() => {
-        callNextNumber(remainingNumbers);
-      }, delay * 1000);
+      // Check if we need to play a funny sound after this number
+      const thresholds = [45, 60, 75, 90];
+      const shouldPlayFunnySound = thresholds.includes(callPosition) && lastFunnySoundThreshold < callPosition;
+
+      if (shouldPlayFunnySound) {
+        setLastFunnySoundThreshold(callPosition);
+        playSound(`funny-${callPosition}`);
+        
+        // Schedule next number after funny sound ends
+        const handleFunnySoundEnd = () => {
+          if (audioRef.current) {
+            audioRef.current.removeEventListener("ended", handleFunnySoundEnd);
+          }
+          timerRef.current = setTimeout(() => {
+            callNextNumber(remainingNumbers);
+          }, delay * 1000);
+        };
+
+        if (audioRef.current?.src) {
+          audioRef.current.addEventListener("ended", handleFunnySoundEnd);
+          
+          const funnyTimer = setTimeout(() => {
+            if (audioRef.current) {
+              audioRef.current.removeEventListener("ended", handleFunnySoundEnd);
+            }
+            timerRef.current = setTimeout(() => {
+              callNextNumber(remainingNumbers);
+            }, delay * 1000);
+          }, 10000);
+
+          const wrappedFunnyHandler = () => {
+            clearTimeout(funnyTimer);
+            if (audioRef.current) {
+              audioRef.current.removeEventListener("ended", wrappedFunnyHandler);
+            }
+            timerRef.current = setTimeout(() => {
+              callNextNumber(remainingNumbers);
+            }, delay * 1000);
+          };
+
+          if (audioRef.current) {
+            audioRef.current.removeEventListener("ended", handleFunnySoundEnd);
+            audioRef.current.addEventListener("ended", wrappedFunnyHandler);
+          }
+        } else {
+          timerRef.current = setTimeout(() => {
+            callNextNumber(remainingNumbers);
+          }, delay * 1000);
+        }
+      } else {
+        // Schedule next number with delay
+        timerRef.current = setTimeout(() => {
+          callNextNumber(remainingNumbers);
+        }, delay * 1000);
+      }
     };
 
     audioHandlerRef.current = handleComplete;
@@ -150,6 +271,11 @@ export default function LoTo() {
   };
 
   const resetGame = () => {
+    // Save current game if it has started and numbers were called
+    if (gameStarted && calledNumbers.length > 0) {
+      saveGameToHistory(calledNumbers);
+    }
+
     setIsRunning(false);
     setGameStarted(false);
     setCalledNumbers([]);
@@ -205,17 +331,7 @@ export default function LoTo() {
   useEffect(() => {
     if (!gameStarted || calledNumbers.length === 0) return;
 
-    const thresholds = [45, 60, 75, 90];
-    for (const threshold of thresholds) {
-      if (
-        calledNumbers.length === threshold &&
-        lastFunnySoundThreshold < threshold
-      ) {
-        setLastFunnySoundThreshold(threshold);
-        playSound(`funny-${threshold}`);
-        break;
-      }
-    }
+    // Funny sounds are now handled in scheduleNextNumber, so this is a no-op
   }, [calledNumbers, gameStarted, lastFunnySoundThreshold]);
 
   useEffect(() => {
@@ -330,6 +446,25 @@ export default function LoTo() {
             )}
           </div>
 
+          {/* Penalized Numbers Info */}
+          {gameStarted && gameHistory.length > 0 && (
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
+              <p className="text-sm font-semibold text-gray-700 mb-2">
+                Số được ưu tiên gọi muộn (5 số cuối từ các trò chơi trước):
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {getPenalizedNumbers().map((num) => (
+                  <span
+                    key={num}
+                    className="px-3 py-1 bg-red-200 text-red-800 rounded text-sm font-semibold"
+                  >
+                    {num}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Delay Control */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-4 md:gap-6">
             <label className="flex items-center gap-2 md:gap-3">
@@ -391,8 +526,13 @@ export default function LoTo() {
           <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6">
             Các số còn lại
           </h2>
-          <div className="grid grid-cols-9 md:grid-cols-15 gap-1 md:gap-2">
-            {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => {
+          <div className="grid grid-cols-9 gap-1 md:gap-2">
+            {/* Display 10 rows × 9 columns: 90, 10, 20, ... / 1, 11, 21, ... */}
+            {Array.from({ length: 90 }, (_, idx) => {
+              const gridRow = Math.floor(idx / 9);
+              const gridCol = idx % 9;
+              return gridRow === 0 && gridCol === 0 ? 90 : gridCol * 10 + gridRow;
+            }).map((num) => {
               const isCalled = calledNumbers.includes(num);
               const isCurrentNumber = currentNumber === num;
 
@@ -433,6 +573,89 @@ export default function LoTo() {
             </button>
           </div>
         )}
+
+        {/* Game History */}
+        <div className="mt-6 md:mt-8 bg-white rounded-lg shadow-lg p-4 md:p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+              Lịch sử trò chơi ({gameHistory.length})
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+              >
+                {showHistory ? "Ẩn" : "Xem"}
+              </button>
+              {gameHistory.length > 0 && (
+                <button
+                  onClick={() => {
+                    setGameHistory([]);
+                    localStorage.removeItem("lotoGameHistory");
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
+                >
+                  Xóa lịch sử
+                </button>
+              )}
+            </div>
+          </div>
+
+          {showHistory && gameHistory.length > 0 && (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {gameHistory.map((record, index) => (
+                <div
+                  key={index}
+                  className="border border-gray-300 rounded-lg p-3 bg-gray-50"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <p className="font-semibold text-gray-700">
+                      Trò chơi {gameHistory.length - index}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(record.timestamp).toLocaleString()}
+                    </p>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Số lần gọi: {record.numbers.length}
+                  </p>
+                  <p className="text-xs text-gray-500 break-words mb-2">
+                    {record.numbers.join(", ")}
+                  </p>
+                  {record.lastFiveNumbers && record.lastFiveNumbers.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-gray-300">
+                      <p className="text-xs font-semibold text-gray-700 mb-1">
+                        5 số cuối (sẽ được gọi muộn ở trò chơi tiếp theo):
+                      </p>
+                      <div className="flex gap-1 flex-wrap">
+                        {record.lastFiveNumbers.map((num, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 bg-red-200 text-red-800 rounded text-xs font-semibold"
+                          >
+                            {num}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!showHistory && gameHistory.length > 0 && (
+            <p className="text-sm text-gray-600">
+              {gameHistory.length} trò chơi trong lịch sử. Nhấn "Xem" để xem chi tiết.
+            </p>
+          )}
+
+          {gameHistory.length === 0 && (
+            <p className="text-sm text-gray-500 italic">
+              Chưa có lịch sử trò chơi. Hoàn thành một trò chơi để lưu lịch sử.
+            </p>
+          )}
+        </div>
       </div>
     </main>
   );
