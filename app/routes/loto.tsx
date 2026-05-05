@@ -534,7 +534,6 @@ export default function LoTo() {
               return (
                 <button
                   key={num}
-                  onClick={() => gameStarted && callNumberManually(num)}
                   disabled={isCalled || !gameStarted}
                   className={`aspect-square flex items-center justify-center rounded font-bold text-xs md:text-sm transition transform hover:scale-105 active:scale-95 ${
                     isCurrentNumber
