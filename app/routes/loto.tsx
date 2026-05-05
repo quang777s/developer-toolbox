@@ -437,7 +437,7 @@ export default function LoTo() {
                   onClick={resetGame}
                   className="px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition text-lg"
                 >
-                  Cài đặt lại
+                  Kết thúc
                 </button>
               </>
             )}
