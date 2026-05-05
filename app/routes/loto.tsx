@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import type { Route } from "./+types/loto";
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "Lô tô - Trò chơi Xổ số Việt Nam" }];
+  return [{ title: "Lô tô" }];
 }
 
 interface GameRecord {
@@ -370,15 +370,12 @@ export default function LoTo() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
             Lô tô
           </h1>
-          <p className="text-lg md:text-xl text-white drop-shadow">
-            Trò chơi Xổ số Việt Nam
-          </p>
         </header>
 
         {/* Current Number Display */}
         <div className="bg-white rounded-lg shadow-2xl p-6 md:p-8 mb-6 md:mb-8">
           <div className="text-center">
-            <p className="text-gray-600 text-lg mb-4">Số được gọi</p>
+            <p className="text-gray-600 text-lg mb-4">Số được hô</p>
             <div className="text-7xl md:text-9xl font-bold text-red-600 min-h-32 flex items-center justify-center">
               {currentNumber !== null ? currentNumber : "-"}
             </div>
@@ -390,7 +387,7 @@ export default function LoTo() {
         {calledNumbers.length > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6 md:mb-8">
             <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-3 md:mb-4">
-              Các số vừa gọi ({calledNumbers.length})
+              Các số vừa hô ({calledNumbers.length})
             </h3>
             <div className="flex flex-wrap gap-2 md:gap-3">
               {[...calledNumbers].reverse().map((num, index) => (
@@ -450,7 +447,7 @@ export default function LoTo() {
           {gameStarted && gameHistory.length > 0 && (
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
               <p className="text-sm font-semibold text-gray-700 mb-2">
-                Số được ưu tiên gọi muộn (5 số cuối từ các trò chơi trước):
+                Số được ưu tiên hô sau (5 số cuối từ các ván đấu trước):
               </p>
               <div className="flex gap-2 flex-wrap">
                 {getPenalizedNumbers().map((num) => (
@@ -479,8 +476,6 @@ export default function LoTo() {
               >
                 <option value="default">Giọng Em Bé</option>
                 <option value="voice2">Giọng Nam</option>
-                <option value="voice3">Giọng 3</option>
-                <option value="voice4">Giọng 4</option>
               </select>
             </label>
             <label className="flex items-center gap-2 md:gap-3">
@@ -560,10 +555,10 @@ export default function LoTo() {
         {gameStarted && remainingCount === 0 && (
           <div className="mt-6 md:mt-8 bg-white rounded-lg shadow-lg p-6 md:p-8 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-green-600 mb-4">
-              Kết thúc trò chơi!
+              Kết thúc ván đấu!
             </h2>
             <p className="text-gray-700 text-base md:text-lg mb-6">
-              Tất cả các số từ 1 đến 90 đã được gọi.
+              Tất cả các số từ 1 đến 90 đã được hô.
             </p>
             <button
               onClick={resetGame}
@@ -578,7 +573,7 @@ export default function LoTo() {
         <div className="mt-6 md:mt-8 bg-white rounded-lg shadow-lg p-4 md:p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-              Lịch sử trò chơi ({gameHistory.length})
+              Lịch sử ván đấu ({gameHistory.length})
             </h2>
             <div className="flex gap-2">
               <button
@@ -610,14 +605,14 @@ export default function LoTo() {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <p className="font-semibold text-gray-700">
-                      Trò chơi {gameHistory.length - index}
+                      Ván đấu {gameHistory.length - index}
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(record.timestamp).toLocaleString()}
                     </p>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">
-                    Số lần gọi: {record.numbers.length}
+                    Số lần hô: {record.numbers.length}
                   </p>
                   <p className="text-xs text-gray-500 break-words mb-2">
                     {record.numbers.join(", ")}
@@ -625,7 +620,7 @@ export default function LoTo() {
                   {record.lastFiveNumbers && record.lastFiveNumbers.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-gray-300">
                       <p className="text-xs font-semibold text-gray-700 mb-1">
-                        5 số cuối (sẽ được gọi muộn ở trò chơi tiếp theo):
+                        5 số cuối (sẽ được hô sau ở ván đấu tiếp theo):
                       </p>
                       <div className="flex gap-1 flex-wrap">
                         {record.lastFiveNumbers.map((num, idx) => (
@@ -646,13 +641,13 @@ export default function LoTo() {
 
           {!showHistory && gameHistory.length > 0 && (
             <p className="text-sm text-gray-600">
-              {gameHistory.length} trò chơi trong lịch sử. Nhấn "Xem" để xem chi tiết.
+              {gameHistory.length} ván đấu trong lịch sử. Nhấn "Xem" để xem chi tiết.
             </p>
           )}
 
           {gameHistory.length === 0 && (
             <p className="text-sm text-gray-500 italic">
-              Chưa có lịch sử trò chơi. Hoàn thành một trò chơi để lưu lịch sử.
+              Chưa có lịch sử ván đấu. Hoàn thành một ván đấu để lưu lịch sử.
             </p>
           )}
         </div>
