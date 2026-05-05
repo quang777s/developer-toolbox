@@ -15,30 +15,36 @@ export default function Home() {
           Studio, Profit Calculator, and Curl Runner, and add more tools over
           time.
         </p>
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             to="/template-studio"
-            className="inline-block px-5 py-2 bg-sky-600 text-white rounded-lg"
+            className="px-5 py-2 bg-sky-600 text-white rounded-lg"
           >
             Open Template Studio
           </Link>
           <Link
             to="/profit-calculator"
-            className="ml-3 inline-block px-5 py-2 bg-amber-600 text-white rounded-lg"
+            className="px-5 py-2 bg-amber-600 text-white rounded-lg"
           >
             Open Profit Calculator
           </Link>
           <Link
             to="/curl"
-            className="ml-3 inline-block px-5 py-2 bg-emerald-600 text-white rounded-lg"
+            className="px-5 py-2 bg-emerald-600 text-white rounded-lg"
           >
             Open Curl Runner
           </Link>
           <Link
             to="/loto"
-            className="ml-3 inline-block px-5 py-2 bg-red-600 text-white rounded-lg"
+            className="px-5 py-2 bg-red-600 text-white rounded-lg"
           >
             Open Lô tô
+          </Link>
+          <Link
+            to="/hrtool"
+            className="px-5 py-2 bg-indigo-600 text-white rounded-lg"
+          >
+            Open HRTool
           </Link>
         </div>
       </header>
@@ -103,6 +109,17 @@ export default function Home() {
           </p>
           <div className="mt-4">
             <Link to="/loto" className="inline-block px-4 py-2 bg-red-600 text-white rounded text-sm">Open Lô tô</Link>
+          </div>
+        </article>
+
+        <article className="p-4 border rounded">
+          <h3 className="font-semibold">HRTool WFH</h3>
+          <p className="text-sm text-gray-600 mt-2">
+            Register WFH days and OT requests by month with quick confirmation dialogs.
+            Includes Sprint Planning OT and Weekly Discussion OT helpers.
+          </p>
+          <div className="mt-4">
+            <Link to="/hrtool" className="inline-block px-4 py-2 bg-indigo-600 text-white rounded text-sm">Open HRTool</Link>
           </div>
         </article>
       </section>
