@@ -46,6 +46,12 @@ export default function Home() {
           >
             Open HRTool
           </Link>
+          <Link
+            to="/houses"
+            className="px-5 py-2 bg-purple-600 text-white rounded-lg"
+          >
+            Open Houses Database
+          </Link>
         </div>
       </header>
 
@@ -120,6 +126,17 @@ export default function Home() {
           </p>
           <div className="mt-4">
             <Link to="/hrtool" className="inline-block px-4 py-2 bg-indigo-600 text-white rounded text-sm">Open HRTool</Link>
+          </div>
+        </article>
+
+        <article className="p-4 border rounded">
+          <h3 className="font-semibold">Houses Database</h3>
+          <p className="text-sm text-gray-600 mt-2">
+            Browse a database of real estate listings with descriptions, images, and media URLs.
+            Search, filter by images, and navigate through listings easily.
+          </p>
+          <div className="mt-4">
+            <Link to="/houses" className="inline-block px-4 py-2 bg-purple-600 text-white rounded text-sm">Open Houses Database</Link>
           </div>
         </article>
       </section>

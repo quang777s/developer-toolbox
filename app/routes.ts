@@ -8,6 +8,7 @@ const routes: RouteConfig = [
 	{ path: "profit-calculator", file: "routes/pnl.tsx" },
 	{ path: "curl", file: "routes/curl.tsx" },
 	{ path: "loto", file: "routes/loto.tsx" },
+	{ path: "houses", file: "routes/houses.tsx" },
 ];
 
 export default routes;
