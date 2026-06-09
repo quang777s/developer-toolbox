@@ -5,17 +5,30 @@ import type { Route } from "./+types/pnl";
 type Position = {
   quantity: string;
   entryPrice: string;
+  fee?: number;
 };
 
 type SellPosition = {
   quantity: string;
   sellPrice: string;
+  fee?: number;
 };
 
 type Scenario = {
   price: number;
   pnl: number;
   roi: number;
+};
+
+type CsvRow = Record<string, string>;
+
+type TradeRow = {
+  date: string;
+  pair: string;
+  side: string;
+  price: string;
+  quantity: string;
+  fee: string;
 };
 
 function toNumber(value: string) {
@@ -62,6 +75,136 @@ function formatInputNumber(value: string, maximumFractionDigits = 8) {
     useGrouping: true,
     maximumFractionDigits,
   }).format(parsed);
+}
+
+function splitCsvLine(line: string) {
+  const cells: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    const next = line[index + 1];
+
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        current += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      cells.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  cells.push(current.trim());
+  return cells;
+}
+
+function parseCsv(text: string) {
+  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+  const rows: CsvRow[] = [];
+  const header = splitCsvLine(lines.shift() ?? "");
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const values = splitCsvLine(line);
+    if (values.length !== header.length) continue;
+    rows.push(Object.fromEntries(header.map((key, index) => [key, values[index] ?? ""])));
+  }
+
+  return rows;
+}
+
+function stripAssetSuffix(value: string) {
+  return String(value ?? "").trim().replace(/[A-Za-z]+$/g, "");
+}
+
+function normalizeTradeRows(rows: CsvRow[]): TradeRow[] {
+  return rows
+    .map((row) => ({
+      date: row["Date(UTC)"] ?? row.Date ?? row.Time ?? "",
+      pair: row.Pair ?? row.Symbol ?? "",
+      side: row.Side ?? row.OrderSide ?? "",
+      price: row.Price ?? row.AveragePrice ?? "",
+      quantity: stripAssetSuffix(row.Executed ?? row.Quantity ?? row.OriginalQuantity ?? ""),
+      fee: row.Fee ?? "",
+    }))
+    .filter((row) => row.pair && row.side && row.price && row.quantity);
+}
+
+function inferPairParts(pair: string, fallbackAsset: string, fallbackCurrency: string) {
+  const normalizedPair = pair.toUpperCase();
+  const stableQuotes = ["USDT", "USDC", "USD1", "BUSD", "FDUSD", "DAI", "TUSD"];
+  const quote = stableQuotes.find((candidate) => normalizedPair.endsWith(candidate)) ?? fallbackCurrency;
+  const asset = normalizedPair.slice(0, -quote.length) || fallbackAsset;
+  return { asset, quote };
+}
+
+function normalizeFeeToQuote(fee: string, price: number, quote: string) {
+  const raw = String(fee ?? "").trim();
+  if (!raw || raw === "0BNB") return 0;
+
+  const numeric = toNumber(stripAssetSuffix(raw));
+  if (!numeric) return undefined;
+
+  const suffix = raw.replace(/^[-+]?\d*\.?\d+/, "").toUpperCase();
+  if (!suffix || suffix === quote) return numeric;
+  if (suffix === "BNB") return undefined;
+
+  return numeric * price;
+}
+
+function normalizePositionsFromTrades(rows: TradeRow[], fallbackAsset: string, fallbackCurrency: string) {
+  const requestedPair = `${fallbackAsset}${fallbackCurrency}`.toUpperCase();
+  let importRows = rows.filter((row) => row.pair.toUpperCase() === requestedPair);
+  let selectedAsset = fallbackAsset.toUpperCase();
+  let selectedCurrency = fallbackCurrency.toUpperCase();
+
+  if (!importRows.length) {
+    const inferred = rows
+      .map((row) => ({ ...inferPairParts(row.pair, fallbackAsset, fallbackCurrency), row }))
+      .find((item) => item.asset.toUpperCase() === fallbackAsset.toUpperCase());
+
+    if (inferred) {
+      selectedAsset = inferred.asset;
+      selectedCurrency = inferred.quote;
+      importRows = rows.filter((row) => row.pair.toUpperCase() === `${selectedAsset}${selectedCurrency}`.toUpperCase());
+    } else if (rows[0]) {
+      const first = inferPairParts(rows[0].pair, fallbackAsset, fallbackCurrency);
+      selectedAsset = first.asset;
+      selectedCurrency = first.quote;
+      importRows = rows.filter((row) => row.pair.toUpperCase() === `${selectedAsset}${selectedCurrency}`.toUpperCase());
+    }
+  }
+
+  const buys = importRows
+    .filter((row) => row.side.toUpperCase() === "BUY")
+    .map((row) => ({
+      quantity: formatInputNumber(row.quantity, 8),
+      entryPrice: formatInputNumber(row.price, 8),
+      fee: normalizeFeeToQuote(row.fee, toNumber(row.price), selectedCurrency),
+    }))
+    .filter((position) => position.quantity !== "" || position.entryPrice !== "");
+
+  const sells = importRows
+    .filter((row) => row.side.toUpperCase() === "SELL")
+    .map((row) => ({
+      quantity: formatInputNumber(row.quantity, 8),
+      sellPrice: formatInputNumber(row.price, 8),
+      fee: normalizeFeeToQuote(row.fee, toNumber(row.price), selectedCurrency),
+    }))
+    .filter((position) => position.quantity !== "" || position.sellPrice !== "");
+
+  return { selectedAsset, selectedCurrency, buys, sells, importedRows: importRows };
 }
 
 function buildScenarios(
@@ -140,7 +283,7 @@ export default function PnlPage() {
       if (qty > 0 && entry > 0) {
         totalBuyQty += qty;
         const gross = qty * entry;
-        const buyFee = gross * (fee / 100);
+        const buyFee = position.fee !== undefined ? Math.max(0, position.fee) : gross * (fee / 100);
         totalBuyCost += gross + buyFee;
       }
     });
@@ -155,7 +298,7 @@ export default function PnlPage() {
       if (qty > 0 && sellPrice > 0) {
         requestedSoldQty += qty;
         const gross = qty * sellPrice;
-        const sellFee = gross * (fee / 100);
+        const sellFee = position.fee !== undefined ? Math.max(0, position.fee) : gross * (fee / 100);
         netSellProceeds += gross - sellFee;
       }
     });
@@ -221,6 +364,7 @@ export default function PnlPage() {
     setPositions((previous) => {
       const copy = previous.slice();
       copy[index] = { ...copy[index], [field]: value };
+      delete copy[index].fee;
       return copy;
     });
   }
@@ -237,6 +381,7 @@ export default function PnlPage() {
     setSellPositions((previous) => {
       const copy = previous.slice();
       copy[index] = { ...copy[index], [field]: value };
+      delete copy[index].fee;
       return copy;
     });
   }
@@ -271,13 +416,38 @@ export default function PnlPage() {
     setStatus("Exported data to profit-calculator-export.json");
   }
 
+  function isCsvText(text: string) {
+    const firstLine = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").find((line) => line.trim()) ?? "";
+    return firstLine.includes(",") && /Date|Pair|Side|Price|Executed/i.test(firstLine);
+  }
+
+  function importCsvText(text: string) {
+    const rows = normalizeTradeRows(parseCsv(text));
+    if (!rows.length) throw new Error("No trade rows found in CSV.");
+
+    const { selectedAsset, selectedCurrency, buys, sells, importedRows } = normalizePositionsFromTrades(rows, asset, currency);
+    setAsset(selectedAsset);
+    setCurrency(selectedCurrency);
+    setPositions(buys.length ? buys : [{ quantity: "", entryPrice: "" }]);
+    setSellPositions(sells);
+    return importedRows.length;
+  }
+
   function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result));
+        const text = String(reader.result);
+
+        if (isCsvText(text)) {
+          const importedRows = importCsvText(text);
+          setStatus(`Imported ${importedRows} trade rows from CSV.`);
+          return;
+        }
+
+        const parsed = JSON.parse(text);
 
         if (typeof parsed.asset === "string") setAsset(parsed.asset.toUpperCase());
         if (typeof parsed.currency === "string") setCurrency(parsed.currency.toUpperCase());
@@ -346,14 +516,14 @@ export default function PnlPage() {
           Export
         </button>
         <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1 bg-amber-600 text-white rounded text-sm">
-          Import
+          Import JSON/CSV
         </button>
       </div>
 
       {status && <p className="text-sm text-slate-600 mb-3">{status}</p>}
 
       <p className="text-sm text-slate-600 mb-6">
-        Calculate average entry and projected profit/loss for crypto, gold, silver, or any traded asset.
+        Calculate average entry and projected profit/loss for crypto, gold, silver, or any traded asset. Import JSON exports or Binance-style trade CSV files.
       </p>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -397,7 +567,7 @@ export default function PnlPage() {
               const qty = toNumber(position.quantity);
               const entry = toNumber(position.entryPrice);
               const grossCost = qty * entry;
-              const costWithFee = grossCost * (1 + feeRate);
+              const costWithFee = position.fee !== undefined ? grossCost + Math.max(0, position.fee) : grossCost * (1 + feeRate);
 
               return (
                 <React.Fragment key={index}>
@@ -473,7 +643,7 @@ export default function PnlPage() {
               </span>
             </li>
             <li>
-              <span className="text-slate-600">Fee Applied: </span>
+              <span className="text-slate-600">Scenario Fee Applied: </span>
               <span className="font-medium">{numberFormatter(Math.max(0, toNumber(feePercent)), 4)}%</span>
             </li>
           </ul>
@@ -494,7 +664,7 @@ export default function PnlPage() {
             const qty = toNumber(position.quantity);
             const sell = toNumber(position.sellPrice);
             const grossValue = qty * sell;
-            const netValue = grossValue * (1 - feeRate);
+            const netValue = position.fee !== undefined ? grossValue - Math.max(0, position.fee) : grossValue * (1 - feeRate);
 
             return (
               <React.Fragment key={index}>
@@ -621,7 +791,7 @@ export default function PnlPage() {
       </section>
       <input
         type="file"
-        accept="application/json"
+        accept="application/json,text/csv,.json,.csv"
         ref={fileInputRef}
         onChange={handleImportFile}
         style={{ display: "none" }}
