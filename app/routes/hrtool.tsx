@@ -30,12 +30,36 @@ export default function HRTool() {
   const [customWfhDate, setCustomWfhDate] = useState('');
   const [customSprintOtDate, setCustomSprintOtDate] = useState('');
   const [customWeeklyOtDate, setCustomWeeklyOtDate] = useState('');
+  const [userRequestIds, setUserRequestIds] = useState('60063');
+  const [sprintReasonOT, setSprintReasonOT] = useState('Sprint planning');
+  const [weeklyReasonOT, setWeeklyReasonOT] = useState('Weekly discussion');
+  const [wfhReason, setWfhReason] = useState('WFH theo lịch');
 
   // Load token from localStorage on component mount
   useEffect(() => {
     const savedToken = localStorage.getItem('hrtool_token');
     if (savedToken) {
       setToken(savedToken);
+    }
+
+    const savedUserRequest = localStorage.getItem('hrtool_user_request');
+    if (savedUserRequest) {
+      setUserRequestIds(savedUserRequest);
+    }
+
+    const savedSprintReason = localStorage.getItem('hrtool_sprint_reason');
+    if (savedSprintReason) {
+      setSprintReasonOT(savedSprintReason);
+    }
+
+    const savedWeeklyReason = localStorage.getItem('hrtool_weekly_reason');
+    if (savedWeeklyReason) {
+      setWeeklyReasonOT(savedWeeklyReason);
+    }
+
+    const savedWfhReason = localStorage.getItem('hrtool_wfh_reason');
+    if (savedWfhReason) {
+      setWfhReason(savedWfhReason);
     }
   }, []);
 
@@ -44,6 +68,37 @@ export default function HRTool() {
     const newToken = event.target.value;
     setToken(newToken);
     localStorage.setItem('hrtool_token', newToken);
+  };
+
+  // Save userRequestIds to localStorage and update state
+  const handleUserRequestChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setUserRequestIds(value);
+    localStorage.setItem('hrtool_user_request', value);
+  };
+
+  const parseUserRequest = (): string[] => {
+    return userRequestIds.split(',').map(s => s.trim()).filter(Boolean);
+  };
+
+  const getWfhReason = (): string => wfhReason.trim() || "WFH theo lịch";
+
+  const handleSprintReasonOTChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSprintReasonOT(value);
+    localStorage.setItem('hrtool_sprint_reason', value);
+  };
+
+  const handleWeeklyReasonOTChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setWeeklyReasonOT(value);
+    localStorage.setItem('hrtool_weekly_reason', value);
+  };
+
+  const handleWfhReasonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setWfhReason(value);
+    localStorage.setItem('hrtool_wfh_reason', value);
   };
 
   // Generate month options
@@ -205,13 +260,13 @@ export default function HRTool() {
           PhuongTienDiChuyen: "",
           LoaiCongTac: 6,
           GhiChu: "",
-          LyDo: "WFH theo lịch",
+          LyDo: getWfhReason(),
           TenCty: "",
           DiaChiCT: "",
           NguoiLienHe: "",
           ThongTinLienLac: "",
           NotifyEmail: [],
-          UserRequest: ["60063"]
+          UserRequest: parseUserRequest()
         };
 
         // Make the API request
@@ -366,7 +421,7 @@ export default function HRTool() {
           CaDau: 0,
           CaGiua: 0,
           CaCuoi: 0,
-          ReasonOT: "Sprint planning",
+          ReasonOT: sprintReasonOT,
           Khoang1: {
             FromTime: startTimeString,
             ToTime: endTimeString,
@@ -397,7 +452,7 @@ export default function HRTool() {
           WorkingPlace: "1",
           NotifyEmail: [],
           IsCalculateMealBill: false,
-          UserRequest: ["60063"],
+          UserRequest: parseUserRequest(),
           OTType: 0,
           Reason1: {
             GroupReason: null,
@@ -568,7 +623,7 @@ export default function HRTool() {
           CaDau: 0,
           CaGiua: 0,
           CaCuoi: 0,
-          ReasonOT: "Weekly discussion",
+          ReasonOT: weeklyReasonOT,
           Khoang1: {
             FromTime: startTimeString,
             ToTime: endTimeString,
@@ -599,7 +654,7 @@ export default function HRTool() {
           WorkingPlace: "1",
           NotifyEmail: [],
           IsCalculateMealBill: false,
-          UserRequest: ["60063"],
+          UserRequest: parseUserRequest(),
           OTType: 0,
           Reason1: {
             GroupReason: null,
@@ -739,6 +794,71 @@ export default function HRTool() {
             </div>
           </div>
         </div>
+
+        {/* Customization Section */}
+        <details className="form-section">
+          <summary className="cursor-pointer text-lg font-medium text-gray-900">
+            Settings
+          </summary>
+
+          <div className="mt-4 space-y-3">
+            <div>
+              <label htmlFor="user-request-input" className="block text-sm font-medium text-gray-700 mb-1">
+                User Request IDs (comma separated):
+              </label>
+              <input
+                id="user-request-input"
+                type="text"
+                value={userRequestIds}
+                onChange={handleUserRequestChange}
+                placeholder="e.g., 60063, 60064"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="wfh-reason-input" className="block text-sm font-medium text-gray-700 mb-1">
+                WFH Reason:
+              </label>
+              <input
+                id="wfh-reason-input"
+                type="text"
+                value={wfhReason}
+                onChange={handleWfhReasonChange}
+                placeholder="WFH reason"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="sprint-reason-input" className="block text-sm font-medium text-gray-700 mb-1">
+                Sprint Planning Reason:
+              </label>
+              <input
+                id="sprint-reason-input"
+                type="text"
+                value={sprintReasonOT}
+                onChange={handleSprintReasonOTChange}
+                placeholder="Sprint planning reason"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="weekly-reason-input" className="block text-sm font-medium text-gray-700 mb-1">
+                Weekly Discussion Reason:
+              </label>
+              <input
+                id="weekly-reason-input"
+                type="text"
+                value={weeklyReasonOT}
+                onChange={handleWeeklyReasonOTChange}
+                placeholder="Weekly discussion reason"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
+              />
+            </div>
+          </div>
+        </details>
 
         {/* Action Buttons */}
         <div className="form-section">
