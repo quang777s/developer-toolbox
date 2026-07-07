@@ -9,8 +9,8 @@ export default function Home() {
   return (
     <main className="pt-16 p-4 container mx-auto">
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold">Developer Toolbox</h1>
-        <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold dark:text-gray-100">Developer Toolbox</h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-2 max-w-2xl mx-auto">
           A growing collection of developer utilities. Start with Template
           Studio, Profit Calculator, and Curl Runner, and add more tools over
           time.
@@ -50,25 +50,25 @@ export default function Home() {
       </header>
 
       <section className="grid md:grid-cols-3 gap-6">
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">Quick Copy</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">Quick Copy</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Type any string and copy it to your clipboard with a single
             click. Useful for generating snippets, tokens, or short text.
           </p>
         </article>
 
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">QR Generator</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">QR Generator</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Create a QR preview from your text and open a larger version for
             sharing or printing.
           </p>
         </article>
 
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">Template Studio</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">Template Studio</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Define simple mustache-like templates and variables to produce
             final strings. Copy outputs or view variables as JSON.
           </p>
@@ -77,9 +77,9 @@ export default function Home() {
           </div>
         </article>
 
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">Profit Calculator</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">Profit Calculator</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Add multiple buy entries, calculate average entry, and generate
             profit/loss tables across price ranges for crypto, gold, silver,
             and more.
@@ -89,9 +89,9 @@ export default function Home() {
           </div>
         </article>
 
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">Curl Runner</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">Curl Runner</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Run and inspect curl commands, save multiple commands, and use
             variable substitution with {'{{key}}'} placeholders.
             Open the dedicated Curl Runner to test API requests from your browser.
@@ -101,9 +101,9 @@ export default function Home() {
           </div>
         </article>
 
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">Lô tô</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">Lô tô</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Trò chơi Xổ số Việt Nam. Gọi các số từ 1 đến 90 một cách ngẫu nhiên.
             Tùy chỉnh thời gian chờ giữa các lần gọi số và thưởng thức âm thanh độc nhất.
           </p>
@@ -112,9 +112,9 @@ export default function Home() {
           </div>
         </article>
 
-        <article className="p-4 border rounded">
-          <h3 className="font-semibold">HRTool WFH</h3>
-          <p className="text-sm text-gray-600 mt-2">
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">HRTool WFH</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Register WFH days and OT requests by month with quick confirmation dialogs.
             Includes Sprint Planning OT and Weekly Discussion OT helpers.
           </p>

@@ -307,15 +307,15 @@ export default function CurlPage() {
     <main className="pt-16 p-4 container mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">Curl Runner</h1>
-          <Link to="/" className="text-sm text-sky-600 hover:underline">← Back</Link>
+          <h1 className="text-2xl font-bold dark:text-gray-100">Curl Runner</h1>
+          <Link to="/" className="text-sm text-sky-600 dark:text-sky-400 hover:underline">← Back</Link>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-1">
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium">Commands</label>
+            <label className="block text-sm font-medium dark:text-gray-100">Commands</label>
             <div className="flex gap-2">
               <button onClick={exportData} className="px-2 py-1 bg-emerald-600 text-white rounded text-sm">Export</button>
               <button onClick={() => fileInputRef.current?.click()} className="px-2 py-1 bg-amber-600 text-white rounded text-sm">Import</button>
@@ -323,15 +323,15 @@ export default function CurlPage() {
           </div>
           <div className="mt-2 space-y-2">
             {commands.map((c, i) => (
-              <div key={i} className={`p-2 border rounded ${i === selectedIndex ? "bg-slate-100" : "bg-white"}`}>
+              <div key={i} className={`p-2 border rounded dark:border-gray-600 ${i === selectedIndex ? "bg-slate-100 dark:bg-gray-700" : "bg-white dark:bg-gray-800"}`}>
                 <div className="flex items-center justify-between">
-                  <input value={c.name} onChange={(e) => setCommands((p) => p.map((x, idx) => (idx === i ? { ...x, name: e.target.value } : x)))} className="p-1 border rounded text-sm flex-1 mr-2" />
+                  <input value={c.name} onChange={(e) => setCommands((p) => p.map((x, idx) => (idx === i ? { ...x, name: e.target.value } : x)))} className="p-1 border rounded text-sm flex-1 mr-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                   <div className="flex gap-2">
                     <button onClick={() => setSelectedIndex(i)} className="px-2 py-1 bg-slate-800 text-white rounded text-sm">Select</button>
                     <button onClick={() => removeCmd(i)} className="px-2 py-1 bg-red-600 text-white rounded text-sm">Del</button>
                   </div>
                 </div>
-                <textarea value={c.cmd} onChange={(e) => updateCmd(i, e.target.value)} className="w-full p-2 mt-2 border rounded text-sm" rows={4} />
+                <textarea value={c.cmd} onChange={(e) => updateCmd(i, e.target.value)} className="w-full p-2 mt-2 border rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" rows={4} />
               </div>
             ))}
             <div>
@@ -342,8 +342,8 @@ export default function CurlPage() {
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium">Selected Command</label>
-          <div className="mt-2 p-3 border rounded">
+          <label className="block text-sm font-medium dark:text-gray-100">Selected Command</label>
+          <div className="mt-2 p-3 border rounded dark:border-gray-600">
             <div className="flex gap-2 items-center mb-2">
               <CopyButton text={commands[selectedIndex]?.cmd ?? ""} className="px-4 py-2 text-base" />
               <button onClick={runSelected} disabled={curlRunning} className="px-4 py-2 bg-slate-800 text-white rounded text-base">{curlRunning ? "Running..." : "Run"}</button>
@@ -351,9 +351,9 @@ export default function CurlPage() {
             </div>
 
             <div className="mb-3">
-              <label className="text-sm">Command (variables applied)</label>
+              <label className="text-sm dark:text-gray-100">Command (variables applied)</label>
                 <div className="mt-2 flex items-start gap-2">
-                <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm whitespace-pre-wrap break-words"><code>{substitutedCmd || "-"}</code></pre>
+                <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm whitespace-pre-wrap break-words dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"><code>{substitutedCmd || "-"}</code></pre>
                 <div className="pt-2">
                   <CopyButton text={substitutedCmd ?? ""} className="px-4 py-2 text-base" />
                 </div>
@@ -361,11 +361,11 @@ export default function CurlPage() {
             </div>
 
             <div className="mb-3">
-              <label className="text-sm">Variables ({'{{key}}'} substitution)</label>
+              <label className="text-sm dark:text-gray-100">Variables ({'{{key}}'} substitution)</label>
               {vars.map((v, i) => (
                 <div key={i} className="flex gap-2 mt-2">
-                  <input placeholder="key" value={v.key} onChange={(e) => setVars((p) => p.map((x, idx) => (idx === i ? { ...x, key: e.target.value } : x)))} className="p-2 border rounded w-1/3" />
-                  <input placeholder="value" value={v.value} onChange={(e) => setVars((p) => p.map((x, idx) => (idx === i ? { ...x, value: e.target.value } : x)))} className="p-2 border rounded flex-1" />
+                  <input placeholder="key" value={v.key} onChange={(e) => setVars((p) => p.map((x, idx) => (idx === i ? { ...x, key: e.target.value } : x)))} className="p-2 border rounded w-1/3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                  <input placeholder="value" value={v.value} onChange={(e) => setVars((p) => p.map((x, idx) => (idx === i ? { ...x, value: e.target.value } : x)))} className="p-2 border rounded flex-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                 </div>
               ))}
               <div className="mt-2">
@@ -374,19 +374,19 @@ export default function CurlPage() {
             </div>
 
             <div>
-              <label className="text-sm">Response</label>
+              <label className="text-sm dark:text-gray-100">Response</label>
               <div className="mt-2">
                 <div className="mb-2 flex items-center gap-2">
                   <CopyButton text={curlOutput} className="px-4 py-2 text-base" />
-                  <span className="text-sm text-slate-600">{curlStatusCode ? `Status ${curlStatusCode}` : ""}</span>
+                  <span className="text-sm text-slate-600 dark:text-gray-300">{curlStatusCode ? `Status ${curlStatusCode}` : ""}</span>
                 </div>
                 <div className="mb-2">
-                  <label className="text-sm">Headers</label>
-                  <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm"><code>{Object.entries(curlResponseHeaders).map(([k, v]) => `${k}: ${v}`).join("\n")}</code></pre>
+                  <label className="text-sm dark:text-gray-100">Headers</label>
+                  <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"><code>{Object.entries(curlResponseHeaders).map(([k, v]) => `${k}: ${v}`).join("\n")}</code></pre>
                 </div>
                 <div>
-                  <label className="text-sm">Body</label>
-                  <div className="p-2 bg-white border rounded w-full overflow-auto text-sm">
+                  <label className="text-sm dark:text-gray-100">Body</label>
+                  <div className="p-2 bg-white border rounded w-full overflow-auto text-sm dark:bg-gray-800 dark:border-gray-600">
                     {responseJson ? (
                       <div>
                         <div className="mb-2 flex gap-2">
@@ -423,8 +423,8 @@ export default function CurlPage() {
                 </div>
 
                 <div className="mt-3">
-                  <label className="text-sm">Request sent (inspect)</label>
-                  <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm"><code>{lastRequestOptions ? JSON.stringify(lastRequestOptions, null, 2) : "-"}</code></pre>
+                  <label className="text-sm dark:text-gray-100">Request sent (inspect)</label>
+                  <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"><code>{lastRequestOptions ? JSON.stringify(lastRequestOptions, null, 2) : "-"}</code></pre>
                   <div className="mt-3 flex justify-end">
                     <button onClick={runSelected} disabled={curlRunning} className="px-4 py-2 bg-slate-800 text-white rounded text-base">{curlRunning ? "Running..." : "Run"}</button>
                   </div>

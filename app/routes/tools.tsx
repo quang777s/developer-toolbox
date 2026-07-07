@@ -526,8 +526,8 @@ export default function Tools() {
     <main className="pt-16 p-4 container mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">Template Studio</h1>
-          <Link to="/" className="text-sm text-sky-600 hover:underline">
+          <h1 className="text-2xl font-bold dark:text-gray-100">Template Studio</h1>
+          <Link to="/" className="text-sm text-sky-600 dark:text-sky-400 hover:underline">
             ← Back to Home
           </Link>
         </div>
@@ -536,19 +536,19 @@ export default function Tools() {
       </div>
       {status && (
         <div className="mb-4">
-          <p className="text-sm text-slate-600">{status}</p>
+          <p className="text-sm text-slate-600 dark:text-gray-300">{status}</p>
         </div>
       )}
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Quick Copy / QR</h2>
+        <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">Quick Copy / QR</h2>
         <div className="flex flex-col md:flex-row gap-4 items-start">
           <div className="relative w-full">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type text to copy or encode as QR"
-              className="w-full p-3 pr-24 border rounded"
+              className="w-full p-3 pr-24 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               rows={7}
             />
             <CopyButton text={input} className="absolute top-2 right-2" />
@@ -564,14 +564,14 @@ export default function Tools() {
                   height={200}
                 />
               ) : (
-                <div className="w-[200px] h-[200px] bg-slate-100 flex items-center justify-center text-slate-400">
+                <div className="w-[200px] h-[200px] bg-slate-100 dark:bg-gray-700 flex items-center justify-center text-slate-400 dark:text-gray-300">
                   QR preview
                 </div>
               )}
 
               <div className="mt-2 flex items-center gap-3">
                 <a
-                  className={`text-sm text-sky-600 ${!input ? "opacity-50 pointer-events-none" : ""}`}
+                  className={`text-sm text-sky-600 dark:text-sky-400 ${!input ? "opacity-50 pointer-events-none" : ""}`}
                   href={input ? `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(input)}` : "#"}
                   target="_blank"
                   rel="noreferrer"
@@ -583,7 +583,7 @@ export default function Tools() {
                     Save snippet
                   </button>
                 ) : null}
-                {status && <span className="text-sm text-slate-600">{status}</span>}
+                {status && <span className="text-sm text-slate-600 dark:text-gray-300">{status}</span>}
               </div>
           </div>
         </div>
@@ -591,11 +591,11 @@ export default function Tools() {
       {/* Curl Runner moved to its own page: /curl */}
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Template Generator</h2>
+        <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">Template Generator</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium">Template</label>
+              <label className="block text-sm font-medium dark:text-gray-100">Template</label>
               <div className="flex gap-2">
                 <button onClick={addTemplate} className="px-3 py-1 bg-slate-800 text-white rounded text-sm">
                   Add template
@@ -625,7 +625,7 @@ export default function Tools() {
                     type="button"
                     onClick={() => setSelectedTemplateIndex(index)}
                     className={`px-3 py-1 rounded-l border text-sm ${
-                      index === selectedTemplateIndex ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-700 border-slate-300"
+                      index === selectedTemplateIndex ? "bg-slate-800 text-white border-slate-800" : "bg-white dark:bg-gray-700 text-slate-700 dark:text-gray-300 border-slate-300 dark:border-gray-600"
                     }`}
                   >
                     {t.name || `Template ${index + 1}`}
@@ -643,39 +643,39 @@ export default function Tools() {
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <label className="text-sm">Name</label>
+              <label className="text-sm dark:text-gray-100">Name</label>
               <input
                 value={templates[selectedTemplateIndex]?.name ?? ""}
                 onChange={(e) => updateTemplateName(selectedTemplateIndex, e.target.value)}
-                className="p-2 border rounded flex-1"
+className="p-2 border rounded flex-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               />
             </div>
 
             
-
+            
 
             <textarea
               value={activeTemplate}
               onChange={(e) => updateActiveTemplate(e.target.value)}
-              className="w-full p-2 border rounded mt-2"
+              className="w-full p-2 border rounded mt-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               rows={6}
             />
 
             <div className="mt-3">
-              <label className="block text-sm font-medium">Variables</label>
+              <label className="block text-sm font-medium dark:text-gray-100">Variables</label>
               {vars.map((v, i) => (
                 <div key={i} className="flex gap-2 mt-2">
                   <input
                     placeholder="key"
                     value={v.key}
                     onChange={(e) => updateVar(i, "key", e.target.value)}
-                    className="p-2 border rounded w-1/3"
+                    className="p-2 border rounded w-1/3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                   />
                   <input
                     placeholder="value"
                     value={v.value}
                     onChange={(e) => updateVar(i, "value", e.target.value)}
-                    className="p-2 border rounded flex-1"
+                    className="p-2 border rounded flex-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                   />
                   <button
                     onClick={() => removeVar(i)}
@@ -695,19 +695,19 @@ export default function Tools() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Output</label>
+            <label className="block text-sm font-medium dark:text-gray-100">Output</label>
             <div className="relative mt-1">
               <textarea
                 readOnly
                 value={output}
-                className="w-full p-3 pr-24 border rounded"
+                className="w-full p-3 pr-24 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 rows={8}
               />
               <CopyButton text={output} className="absolute top-2 right-2" />
             </div>
             <div className="mt-3">
-              <label className="block text-sm font-medium mb-1">Variables JSON</label>
-              <pre className="p-2 bg-slate-50 border rounded w-full overflow-auto text-sm">
+              <label className="block text-sm font-medium mb-1 dark:text-gray-100">Variables JSON</label>
+              <pre className="p-2 bg-slate-50 dark:bg-gray-700 border rounded dark:border-gray-600 w-full overflow-auto text-sm dark:text-gray-100">
                 <code>{varsAsJson()}</code>
               </pre>
             </div>

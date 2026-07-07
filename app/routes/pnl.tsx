@@ -508,8 +508,8 @@ export default function PnlPage() {
   return (
     <main className="pt-16 p-4 container mx-auto">
       <div className="flex items-center gap-4 mb-4">
-        <h1 className="text-2xl font-bold">Profit Calculator</h1>
-        <Link to="/" className="text-sm text-sky-600 hover:underline">
+        <h1 className="text-2xl font-bold dark:text-gray-100">Profit Calculator</h1>
+        <Link to="/" className="text-sm text-sky-600 dark:text-sky-400 hover:underline">
           ← Back to Home
         </Link>
         <button onClick={exportData} className="ml-auto px-3 py-1 bg-emerald-600 text-white rounded text-sm">
@@ -520,40 +520,40 @@ export default function PnlPage() {
         </button>
       </div>
 
-      {status && <p className="text-sm text-slate-600 mb-3">{status}</p>}
+      {status && <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{status}</p>}
 
-      <p className="text-sm text-slate-600 mb-6">
+      <p className="text-sm text-slate-600 dark:text-gray-300 mb-6">
         Calculate average entry and projected profit/loss for crypto, gold, silver, or any traded asset. Import JSON exports or Binance-style trade CSV files.
       </p>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="p-4 border rounded">
-          <h2 className="text-lg font-semibold mb-3">Asset Setup</h2>
+        <div className="p-4 border rounded dark:border-gray-600">
+          <h2 className="text-lg font-semibold mb-3 dark:text-gray-100">Asset Setup</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Asset</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-100">Asset</label>
               <input
                 value={asset}
                 onChange={(e) => setAsset(e.target.value.toUpperCase())}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 placeholder="SOL"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Quote Currency</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-100">Quote Currency</label>
               <input
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value.toUpperCase())}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 placeholder="USDT"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Trading Fee (%) per trade</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-100">Trading Fee (%) per trade</label>
               <input
                 value={feePercent}
                 onChange={(e) => setFeePercent(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 placeholder="0.1"
                 inputMode="decimal"
               />
@@ -561,8 +561,8 @@ export default function PnlPage() {
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium mb-2">Buy Positions</label>
-            <p className="text-xs text-slate-500 mb-2">You can enter numbers like 1,234.56 or 1.234,56.</p>
+            <label className="block text-sm font-medium mb-2 dark:text-gray-100">Buy Positions</label>
+            <p className="text-xs text-slate-500 dark:text-gray-300 mb-2">You can enter numbers like 1,234.56 or 1.234,56.</p>
             {positions.map((position, index) => {
               const qty = toNumber(position.quantity);
               const entry = toNumber(position.entryPrice);
@@ -576,7 +576,7 @@ export default function PnlPage() {
                       value={position.quantity}
                       onChange={(e) => updatePosition(index, "quantity", e.target.value)}
                       onBlur={(e) => updatePosition(index, "quantity", formatInputNumber(e.target.value, 8))}
-                      className="sm:col-span-4 p-2 border rounded"
+                      className="sm:col-span-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                       placeholder={`Quantity (${asset || "ASSET"})`}
                       inputMode="decimal"
                     />
@@ -584,7 +584,7 @@ export default function PnlPage() {
                       value={position.entryPrice}
                       onChange={(e) => updatePosition(index, "entryPrice", e.target.value)}
                       onBlur={(e) => updatePosition(index, "entryPrice", formatInputNumber(e.target.value, 8))}
-                      className="sm:col-span-5 p-2 border rounded"
+                      className="sm:col-span-5 p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                       placeholder={`Entry price (${currency || "USD"})`}
                       inputMode="decimal"
                     />
@@ -596,7 +596,7 @@ export default function PnlPage() {
                       Remove
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500 mb-2">
+                  <p className="text-xs text-slate-500 dark:text-gray-300 mb-2">
                     Cost: {currencyFormatter(grossCost, currency || "USD")} · Cost incl fee: {currencyFormatter(costWithFee, currency || "USD")}
                   </p>
                 </React.Fragment>
@@ -609,57 +609,57 @@ export default function PnlPage() {
           </div>
         </div>
 
-        <div className="p-4 border rounded">
-          <h2 className="text-lg font-semibold mb-3">Position Summary</h2>
+        <div className="p-4 border rounded dark:border-gray-600">
+          <h2 className="text-lg font-semibold mb-3 dark:text-gray-100">Position Summary</h2>
           <ul className="space-y-2 text-sm">
             <li>
-              <span className="text-slate-600">Total Quantity: </span>
+              <span className="text-slate-600 dark:text-gray-300">Total Quantity: </span>
               <span className="font-medium">{numberFormatter(totals.totalBuyQty, 6)} {asset || "ASSET"}</span>
             </li>
             <li>
-              <span className="text-slate-600">Total Buy Cost: </span>
+              <span className="text-slate-600 dark:text-gray-300">Total Buy Cost: </span>
               <span className="font-medium">{currencyFormatter(totals.totalBuyCost, currency || "USD")}</span>
             </li>
             <li>
-              <span className="text-slate-600">Average Entry: </span>
+              <span className="text-slate-600 dark:text-gray-300">Average Entry: </span>
               <span className="font-medium">{numberFormatter(totals.avgEntry, 6)} {currency || "USD"}</span>
             </li>
             <li>
-              <span className="text-slate-600">Sold Quantity: </span>
+              <span className="text-slate-600 dark:text-gray-300">Sold Quantity: </span>
               <span className="font-medium">{numberFormatter(totals.soldQty, 6)} {asset || "ASSET"}</span>
             </li>
             <li>
-              <span className="text-slate-600">Remaining Quantity: </span>
+              <span className="text-slate-600 dark:text-gray-300">Remaining Quantity: </span>
               <span className="font-medium">{numberFormatter(totals.remainingQty, 6)} {asset || "ASSET"}</span>
             </li>
             <li>
-              <span className="text-slate-600">Break-even Sell Price: </span>
+              <span className="text-slate-600 dark:text-gray-300">Break-even Sell Price: </span>
               <span className="font-medium">{numberFormatter(Math.max(0, totals.breakEvenSellPrice), 6)} {currency || "USD"}</span>
             </li>
             <li>
-              <span className="text-slate-600">Realized P/L: </span>
-              <span className={`font-medium ${totals.realizedPnl >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+              <span className="text-slate-600 dark:text-gray-300">Realized P/L: </span>
+              <span className={`font-medium ${totals.realizedPnl >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
                 {currencyFormatter(totals.realizedPnl, currency || "USD")}
               </span>
             </li>
             <li>
-              <span className="text-slate-600">Scenario Fee Applied: </span>
+              <span className="text-slate-600 dark:text-gray-300">Scenario Fee Applied: </span>
               <span className="font-medium">{numberFormatter(Math.max(0, toNumber(feePercent)), 4)}%</span>
             </li>
           </ul>
           {totals.requestedSoldQty > totals.totalBuyQty && (
-            <p className="text-xs text-amber-700 mt-2">
+            <p className="text-xs text-amber-700 dark:text-amber-400 mt-2">
               Sold quantity is capped to total bought quantity for calculation.
             </p>
           )}
-          <p className="text-xs text-slate-500 mt-3">P/L includes buy-side fee on buys and sell-side fee on each sell trade (past + scenario exit).</p>
+          <p className="text-xs text-slate-500 dark:text-gray-300 mt-3">P/L includes buy-side fee on buys and sell-side fee on each sell trade (past + scenario exit).</p>
         </div>
       </section>
 
       <section className="mb-8">
-        <div className="p-4 border rounded">
-          <h2 className="text-lg font-semibold mb-3">Sell Positions (Optional)</h2>
-          <p className="text-xs text-slate-500 mb-2">Add historical sells to include realized profit/loss before scenario calculation.</p>
+        <div className="p-4 border rounded dark:border-gray-600">
+          <h2 className="text-lg font-semibold mb-3 dark:text-gray-100">Sell Positions (Optional)</h2>
+          <p className="text-xs text-slate-500 dark:text-gray-300 mb-2">Add historical sells to include realized profit/loss before scenario calculation.</p>
           {sellPositions.map((position, index) => {
             const qty = toNumber(position.quantity);
             const sell = toNumber(position.sellPrice);
@@ -673,7 +673,7 @@ export default function PnlPage() {
                     value={position.quantity}
                     onChange={(e) => updateSellPosition(index, "quantity", e.target.value)}
                     onBlur={(e) => updateSellPosition(index, "quantity", formatInputNumber(e.target.value, 8))}
-                    className="sm:col-span-4 p-2 border rounded"
+                    className="sm:col-span-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                     placeholder={`Sold quantity (${asset || "ASSET"})`}
                     inputMode="decimal"
                   />
@@ -681,7 +681,7 @@ export default function PnlPage() {
                     value={position.sellPrice}
                     onChange={(e) => updateSellPosition(index, "sellPrice", e.target.value)}
                     onBlur={(e) => updateSellPosition(index, "sellPrice", formatInputNumber(e.target.value, 8))}
-                    className="sm:col-span-5 p-2 border rounded"
+                    className="sm:col-span-5 p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                     placeholder={`Sell price (${currency || "USD"})`}
                     inputMode="decimal"
                   />
@@ -692,7 +692,7 @@ export default function PnlPage() {
                     Remove
                   </button>
                 </div>
-                <p className="text-xs text-slate-500 mb-2">
+                <p className="text-xs text-slate-500 dark:text-gray-300 mb-2">
                   Value: {currencyFormatter(grossValue, currency || "USD")} · Net after fee: {currencyFormatter(netValue, currency || "USD")}
                 </p>
               </React.Fragment>
@@ -705,33 +705,33 @@ export default function PnlPage() {
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="p-4 border rounded">
-          <h2 className="text-lg font-semibold mb-3">Profit Scenarios</h2>
+        <div className="p-4 border rounded dark:border-gray-600">
+          <h2 className="text-lg font-semibold mb-3 dark:text-gray-100">Profit Scenarios</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input value={profitStart} onChange={(e) => setProfitStart(e.target.value)} onBlur={(e) => setProfitStart(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Start" inputMode="decimal" />
-            <input value={profitEnd} onChange={(e) => setProfitEnd(e.target.value)} onBlur={(e) => setProfitEnd(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="End" inputMode="decimal" />
-            <input value={profitStep} onChange={(e) => setProfitStep(e.target.value)} onBlur={(e) => setProfitStep(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Step" inputMode="decimal" />
+            <input value={profitStart} onChange={(e) => setProfitStart(e.target.value)} onBlur={(e) => setProfitStart(formatInputNumber(e.target.value, 8))} className="p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Start" inputMode="decimal" />
+            <input value={profitEnd} onChange={(e) => setProfitEnd(e.target.value)} onBlur={(e) => setProfitEnd(formatInputNumber(e.target.value, 8))} className="p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="End" inputMode="decimal" />
+            <input value={profitStep} onChange={(e) => setProfitStep(e.target.value)} onBlur={(e) => setProfitStep(formatInputNumber(e.target.value, 8))} className="p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Step" inputMode="decimal" />
           </div>
-          <p className="text-xs text-slate-500 mt-2">Example: 130 → 180 with step 5</p>
+          <p className="text-xs text-slate-500 dark:text-gray-300 mt-2">Example: 130 → 180 with step 5</p>
         </div>
 
-        <div className="p-4 border rounded">
-          <h2 className="text-lg font-semibold mb-3">Loss Scenarios</h2>
+        <div className="p-4 border rounded dark:border-gray-600">
+          <h2 className="text-lg font-semibold mb-3 dark:text-gray-100">Loss Scenarios</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input value={lossStart} onChange={(e) => setLossStart(e.target.value)} onBlur={(e) => setLossStart(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Start" inputMode="decimal" />
-            <input value={lossEnd} onChange={(e) => setLossEnd(e.target.value)} onBlur={(e) => setLossEnd(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="End" inputMode="decimal" />
-            <input value={lossStep} onChange={(e) => setLossStep(e.target.value)} onBlur={(e) => setLossStep(formatInputNumber(e.target.value, 8))} className="p-2 border rounded" placeholder="Step" inputMode="decimal" />
+            <input value={lossStart} onChange={(e) => setLossStart(e.target.value)} onBlur={(e) => setLossStart(formatInputNumber(e.target.value, 8))} className="p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Start" inputMode="decimal" />
+            <input value={lossEnd} onChange={(e) => setLossEnd(e.target.value)} onBlur={(e) => setLossEnd(formatInputNumber(e.target.value, 8))} className="p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="End" inputMode="decimal" />
+            <input value={lossStep} onChange={(e) => setLossStep(e.target.value)} onBlur={(e) => setLossStep(formatInputNumber(e.target.value, 8))} className="p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Step" inputMode="decimal" />
           </div>
-          <p className="text-xs text-slate-500 mt-2">Example: 120 → 50 with step 5</p>
+          <p className="text-xs text-slate-500 dark:text-gray-300 mt-2">Example: 120 → 50 with step 5</p>
         </div>
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <div className="p-4 border rounded overflow-auto">
-          <h3 className="font-semibold mb-3">Profit Table</h3>
+        <div className="p-4 border rounded overflow-auto dark:border-gray-600">
+          <h3 className="font-semibold mb-3 dark:text-gray-100">Profit Table</h3>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left border-b">
+              <tr className="text-left border-b dark:border-gray-600">
                 <th className="py-2 pr-2">Price ({currency || "USD"})</th>
                 <th className="py-2 pr-2">P/L ({currency || "USD"})</th>
                 <th className="py-2">ROI</th>
@@ -739,30 +739,30 @@ export default function PnlPage() {
             </thead>
             <tbody>
               {profitScenarios.map((row) => (
-                <tr key={`profit-${row.price}`} className="border-b last:border-0">
+                <tr key={`profit-${row.price}`} className="border-b dark:border-gray-600 last:border-0">
                   <td className="py-2 pr-2">{numberFormatter(row.price, 6)}</td>
-                  <td className={`py-2 pr-2 ${row.pnl >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                  <td className={`py-2 pr-2 ${row.pnl >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
                     {currencyFormatter(row.pnl, currency || "USD")}
                   </td>
-                  <td className={`py-2 ${row.roi >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                  <td className={`py-2 ${row.roi >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
                     {numberFormatter(row.roi, 2)}%
                   </td>
                 </tr>
               ))}
               {!profitScenarios.length && (
                 <tr>
-                  <td colSpan={3} className="py-3 text-slate-500">Enter valid values to see scenarios.</td>
+                  <td colSpan={3} className="py-3 text-slate-500 dark:text-gray-300">Enter valid values to see scenarios.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
 
-        <div className="p-4 border rounded overflow-auto">
-          <h3 className="font-semibold mb-3">Loss Table</h3>
+        <div className="p-4 border rounded overflow-auto dark:border-gray-600">
+          <h3 className="font-semibold mb-3 dark:text-gray-100">Loss Table</h3>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left border-b">
+              <tr className="text-left border-b dark:border-gray-600">
                 <th className="py-2 pr-2">Price ({currency || "USD"})</th>
                 <th className="py-2 pr-2">P/L ({currency || "USD"})</th>
                 <th className="py-2">ROI</th>
@@ -770,19 +770,19 @@ export default function PnlPage() {
             </thead>
             <tbody>
               {lossScenarios.map((row) => (
-                <tr key={`loss-${row.price}`} className="border-b last:border-0">
+                <tr key={`loss-${row.price}`} className="border-b dark:border-gray-600 last:border-0">
                   <td className="py-2 pr-2">{numberFormatter(row.price, 6)}</td>
-                  <td className={`py-2 pr-2 ${row.pnl >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                  <td className={`py-2 pr-2 ${row.pnl >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
                     {currencyFormatter(row.pnl, currency || "USD")}
                   </td>
-                  <td className={`py-2 ${row.roi >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                  <td className={`py-2 ${row.roi >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
                     {numberFormatter(row.roi, 2)}%
                   </td>
                 </tr>
               ))}
               {!lossScenarios.length && (
                 <tr>
-                  <td colSpan={3} className="py-3 text-slate-500">Enter valid values to see scenarios.</td>
+                  <td colSpan={3} className="py-3 text-slate-500 dark:text-gray-300">Enter valid values to see scenarios.</td>
                 </tr>
               )}
             </tbody>
