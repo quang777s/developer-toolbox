@@ -743,11 +743,11 @@ export default function HRTool() {
   return (
     <div className="hrtool-page">
       <div className="hrtool-container">
-        <h1>HRTool</h1>
+        <h1 className="text-gray-900 dark:text-gray-100">HRTool</h1>
 
         {/* Token Input Section */}
         <div className="form-section">
-          <label htmlFor="token-input">Token:</label>
+          <label htmlFor="token-input" className="text-gray-700 dark:text-gray-100 font-medium">Token:</label>
           <input
             id="token-input"
             type="text"
@@ -797,13 +797,13 @@ export default function HRTool() {
 
         {/* Customization Section */}
         <details className="form-section">
-          <summary className="cursor-pointer text-lg font-medium text-gray-900">
+          <summary className="cursor-pointer text-lg font-medium text-gray-900 dark:text-gray-100">
             Settings
           </summary>
 
           <div className="mt-4 space-y-3">
             <div>
-              <label htmlFor="user-request-input" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="user-request-input" className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">
                 User Request IDs (comma separated):
               </label>
               <input
@@ -812,12 +812,12 @@ export default function HRTool() {
                 value={userRequestIds}
                 onChange={handleUserRequestChange}
                 placeholder="e.g., 60063, 60064"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label htmlFor="wfh-reason-input" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="wfh-reason-input" className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">
                 WFH Reason:
               </label>
               <input
@@ -826,12 +826,12 @@ export default function HRTool() {
                 value={wfhReason}
                 onChange={handleWfhReasonChange}
                 placeholder="WFH reason"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label htmlFor="sprint-reason-input" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="sprint-reason-input" className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">
                 Sprint Planning Reason:
               </label>
               <input
@@ -840,12 +840,12 @@ export default function HRTool() {
                 value={sprintReasonOT}
                 onChange={handleSprintReasonOTChange}
                 placeholder="Sprint planning reason"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label htmlFor="weekly-reason-input" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="weekly-reason-input" className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">
                 Weekly Discussion Reason:
               </label>
               <input
@@ -854,7 +854,7 @@ export default function HRTool() {
                 value={weeklyReasonOT}
                 onChange={handleWeeklyReasonOTChange}
                 placeholder="Weekly discussion reason"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -862,7 +862,7 @@ export default function HRTool() {
 
         {/* Action Buttons */}
         <div className="form-section">
-          <h3>Actions:</h3>
+          <h3 className="text-gray-900 dark:text-gray-100">Actions:</h3>
           <div className="button-group">
             <button
               className="action-button primary"
@@ -892,7 +892,7 @@ export default function HRTool() {
           <p>Current selection: {months[selectedMonth - 1]} {selectedYear}</p>
           {token && (
             <div className="token-display-container">
-              <p className="text-xs text-gray-500 dark:text-gray-400">Token:</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Token:</p>
               <div className="token-value-box">
                 <p className="token-text">{token}</p>
               </div>
@@ -904,28 +904,28 @@ export default function HRTool() {
         <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="mx-auto max-w-md rounded bg-white p-6">
-              <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 mb-4">
+            <Dialog.Panel className="mx-auto max-w-md rounded bg-white dark:bg-gray-800 p-6">
+              <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">
                 Confirm WFH Registration
               </Dialog.Title>
 
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                 Register WFH for every Wednesday, Thursday, and Friday in {months[selectedMonth - 1]} {selectedYear}?
               </p>
 
               <div className="mb-4 space-y-3">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-medium text-gray-900">WFH Days:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100">WFH Days:</h4>
                   <div className="flex gap-2">
                     <button
                       onClick={checkAllWfhDays}
-                      className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                      className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800"
                     >
                       Check All
                     </button>
                     <button
                       onClick={uncheckAllWfhDays}
-                      className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
                     >
                       Uncheck All
                     </button>
@@ -933,7 +933,7 @@ export default function HRTool() {
                 </div>
 
                 <div className="wfh-days-list max-h-32 overflow-y-auto">
-                  <ul className="text-sm text-gray-600 space-y-2">
+                  <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
                     {wfhDays.map((day, index) => (
                       <li key={index} className="py-1 flex items-center">
                         <input
@@ -943,7 +943,7 @@ export default function HRTool() {
                           onChange={() => toggleWfhDay(day)}
                           className="mr-3 w-4 h-4 cursor-pointer"
                         />
-                        <label htmlFor={`wfh-day-${index}`} className="cursor-pointer flex-1">
+                        <label htmlFor={`wfh-day-${index}`} className="cursor-pointer flex-1 text-gray-700 dark:text-gray-100">
                           {day}
                         </label>
                       </li>
@@ -951,20 +951,20 @@ export default function HRTool() {
                   </ul>
                 </div>
 
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Selected: {selectedWfhDays.size} / {wfhDays.length} days
                 </p>
 
-                <div className="pt-2 border-t border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Add custom date:</label>
-                  <p className="text-xs text-gray-500 mb-2">Format: Month Day, Year (e.g., May 10, 2026)</p>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">Add custom date:</label>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">Format: Month Day, Year (e.g., May 10, 2026)</p>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={customWfhDate}
                       onChange={(e) => setCustomWfhDate(e.target.value)}
                       placeholder="May 10, 2026"
-                      className="flex-1 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="flex-1 px-2 py-1 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       onKeyPress={(e) => e.key === 'Enter' && addCustomWfhDay()}
                     />
                     <button
@@ -979,7 +979,7 @@ export default function HRTool() {
 
               <div className="flex justify-end space-x-3">
                 <button
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
                   onClick={handleCancelWfh}
                 >
                   Cancel
@@ -999,26 +999,26 @@ export default function HRTool() {
         <Dialog open={sprintDialogOpen} onClose={() => setSprintDialogOpen(false)}>
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="mx-auto max-w-md rounded bg-white p-6">
-              <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 mb-4">
+            <Dialog.Panel className="mx-auto max-w-md rounded bg-white dark:bg-gray-800 p-6">
+              <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">
                 Sprint Planning OT Registration
               </Dialog.Title>
 
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                 Register Sprint Planning OT for all Mondays in {months[selectedMonth - 1]} {selectedYear}?
               </p>
 
               {/* Time Selection */}
               <div className="mb-4 space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Start Time:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Start Time:</h4>
                   <div className="flex space-x-4">
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Hour</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Hour</label>
                       <select
                         value={selectedHour}
                         onChange={(e) => setSelectedHour(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 24 }, (_, i) => (
                           <option key={i} value={i}>
@@ -1028,11 +1028,11 @@ export default function HRTool() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Minute</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Minute</label>
                       <select
                         value={selectedMinute}
                         onChange={(e) => setSelectedMinute(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
                           <option key={minute} value={minute}>
@@ -1045,14 +1045,14 @@ export default function HRTool() {
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">End Time:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">End Time:</h4>
                   <div className="flex space-x-4">
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Hour</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Hour</label>
                       <select
                         value={selectedEndHour}
                         onChange={(e) => setSelectedEndHour(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 24 }, (_, i) => (
                           <option key={i} value={i}>
@@ -1062,11 +1062,11 @@ export default function HRTool() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Minute</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Minute</label>
                       <select
                         value={selectedEndMinute}
                         onChange={(e) => setSelectedEndMinute(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
                           <option key={minute} value={minute}>
@@ -1078,7 +1078,7 @@ export default function HRTool() {
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                   Selected time: {String(selectedHour).padStart(2, '0')}:{String(selectedMinute).padStart(2, '0')} - {String(selectedEndHour).padStart(2, '0')}:{String(selectedEndMinute).padStart(2, '0')}
                 </p>
               </div>
@@ -1086,17 +1086,17 @@ export default function HRTool() {
               {/* Monday Days List */}
               <div className="mb-4 space-y-3">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-medium text-gray-900">Sprint Planning OT Days:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100">Sprint Planning OT Days:</h4>
                   <div className="flex gap-2">
                     <button
                       onClick={checkAllSprintOtDays}
-                      className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
+                      className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-800"
                     >
                       Check All
                     </button>
                     <button
                       onClick={uncheckAllSprintOtDays}
-                      className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
                     >
                       Uncheck All
                     </button>
@@ -1104,7 +1104,7 @@ export default function HRTool() {
                 </div>
 
                 <div className="wfh-days-list max-h-32 overflow-y-auto">
-                  <ul className="text-sm text-gray-600 space-y-2">
+                  <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
                     {sprintOtDays.map((day, index) => (
                       <li key={index} className="py-1 flex items-center">
                         <input
@@ -1114,7 +1114,7 @@ export default function HRTool() {
                           onChange={() => toggleSprintOtDay(day)}
                           className="mr-3 w-4 h-4 cursor-pointer"
                         />
-                        <label htmlFor={`sprint-ot-day-${index}`} className="cursor-pointer flex-1">
+                        <label htmlFor={`sprint-ot-day-${index}`} className="cursor-pointer flex-1 text-gray-700 dark:text-gray-100">
                           {day}
                         </label>
                       </li>
@@ -1122,20 +1122,20 @@ export default function HRTool() {
                   </ul>
                 </div>
 
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Selected: {selectedSprintOtDays.size} / {sprintOtDays.length} days
                 </p>
 
-                <div className="pt-2 border-t border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Add custom date:</label>
-                  <p className="text-xs text-gray-500 mb-2">Format: Month Day, Year (e.g., May 12, 2026)</p>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">Add custom date:</label>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">Format: Month Day, Year (e.g., May 12, 2026)</p>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={customSprintOtDate}
                       onChange={(e) => setCustomSprintOtDate(e.target.value)}
                       placeholder="May 12, 2026"
-                      className="flex-1 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="flex-1 px-2 py-1 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       onKeyPress={(e) => e.key === 'Enter' && addCustomSprintOtDay()}
                     />
                     <button
@@ -1150,7 +1150,7 @@ export default function HRTool() {
 
               <div className="flex justify-end space-x-3">
                 <button
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
                   onClick={handleCancelSprintOt}
                 >
                   Cancel
@@ -1170,26 +1170,26 @@ export default function HRTool() {
         <Dialog open={weeklyDialogOpen} onClose={() => setWeeklyDialogOpen(false)}>
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="mx-auto max-w-md rounded bg-white p-6">
-              <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 mb-4">
+            <Dialog.Panel className="mx-auto max-w-md rounded bg-white dark:bg-gray-800 p-6">
+              <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">
                 Weekly Discussion OT Registration
               </Dialog.Title>
 
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                 Register Weekly Discussion OT for all Wednesdays in {months[selectedMonth - 1]} {selectedYear}?
               </p>
 
               {/* Time Selection */}
               <div className="mb-4 space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Start Time:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Start Time:</h4>
                   <div className="flex space-x-4">
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Hour</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Hour</label>
                       <select
                         value={weeklySelectedHour}
                         onChange={(e) => setWeeklySelectedHour(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 24 }, (_, i) => (
                           <option key={i} value={i}>
@@ -1199,11 +1199,11 @@ export default function HRTool() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Minute</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Minute</label>
                       <select
                         value={weeklySelectedMinute}
                         onChange={(e) => setWeeklySelectedMinute(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
                           <option key={minute} value={minute}>
@@ -1216,14 +1216,14 @@ export default function HRTool() {
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">End Time:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">End Time:</h4>
                   <div className="flex space-x-4">
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Hour</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Hour</label>
                       <select
                         value={weeklySelectedEndHour}
                         onChange={(e) => setWeeklySelectedEndHour(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 24 }, (_, i) => (
                           <option key={i} value={i}>
@@ -1233,11 +1233,11 @@ export default function HRTool() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <label className="block text-sm text-gray-700 mb-1">Minute</label>
+                      <label className="block text-sm text-gray-700 dark:text-gray-100 mb-1">Minute</label>
                       <select
                         value={weeklySelectedEndMinute}
                         onChange={(e) => setWeeklySelectedEndMinute(parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
                           <option key={minute} value={minute}>
@@ -1249,7 +1249,7 @@ export default function HRTool() {
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                   Selected time: {String(weeklySelectedHour).padStart(2, '0')}:{String(weeklySelectedMinute).padStart(2, '0')} - {String(weeklySelectedEndHour).padStart(2, '0')}:{String(weeklySelectedEndMinute).padStart(2, '0')}
                 </p>
               </div>
@@ -1257,17 +1257,17 @@ export default function HRTool() {
               {/* Wednesday Days List */}
               <div className="mb-4 space-y-3">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-medium text-gray-900">Weekly Discussion OT Days:</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100">Weekly Discussion OT Days:</h4>
                   <div className="flex gap-2">
                     <button
                       onClick={checkAllWeeklyOtDays}
-                      className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
+                      className="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded hover:bg-purple-200 dark:hover:bg-purple-800"
                     >
                       Check All
                     </button>
                     <button
                       onClick={uncheckAllWeeklyOtDays}
-                      className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
                     >
                       Uncheck All
                     </button>
@@ -1275,7 +1275,7 @@ export default function HRTool() {
                 </div>
 
                 <div className="wfh-days-list max-h-32 overflow-y-auto">
-                  <ul className="text-sm text-gray-600 space-y-2">
+                  <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
                     {weeklyOtDays.map((day, index) => (
                       <li key={index} className="py-1 flex items-center">
                         <input
@@ -1285,7 +1285,7 @@ export default function HRTool() {
                           onChange={() => toggleWeeklyOtDay(day)}
                           className="mr-3 w-4 h-4 cursor-pointer"
                         />
-                        <label htmlFor={`weekly-ot-day-${index}`} className="cursor-pointer flex-1">
+                        <label htmlFor={`weekly-ot-day-${index}`} className="cursor-pointer flex-1 text-gray-700 dark:text-gray-100">
                           {day}
                         </label>
                       </li>
@@ -1293,20 +1293,20 @@ export default function HRTool() {
                   </ul>
                 </div>
 
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Selected: {selectedWeeklyOtDays.size} / {weeklyOtDays.length} days
                 </p>
 
-                <div className="pt-2 border-t border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Add custom date:</label>
-                  <p className="text-xs text-gray-500 mb-2">Format: Month Day, Year (e.g., May 14, 2026)</p>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">Add custom date:</label>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">Format: Month Day, Year (e.g., May 14, 2026)</p>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={customWeeklyOtDate}
                       onChange={(e) => setCustomWeeklyOtDate(e.target.value)}
                       placeholder="May 14, 2026"
-                      className="flex-1 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="flex-1 px-2 py-1 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       onKeyPress={(e) => e.key === 'Enter' && addCustomWeeklyOtDay()}
                     />
                     <button
@@ -1321,7 +1321,7 @@ export default function HRTool() {
 
               <div className="flex justify-end space-x-3">
                 <button
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
                   onClick={handleCancelWeeklyOt}
                 >
                   Cancel

@@ -40,7 +40,7 @@ body {
 }
 
 .date-field label {
-  @apply block text-sm font-medium text-gray-700 dark:text-gray-300;
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-100;
 }
 
 .date-select {
