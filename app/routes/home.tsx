@@ -46,6 +46,12 @@ export default function Home() {
           >
             Open HRTool
           </Link>
+          <Link
+            to="/clean-copy"
+            className="px-5 py-2 bg-violet-600 text-white rounded-lg"
+          >
+            Open Clean Copy
+          </Link>
         </div>
       </header>
 
@@ -120,6 +126,17 @@ export default function Home() {
           </p>
           <div className="mt-4">
             <Link to="/hrtool" className="inline-block px-4 py-2 bg-indigo-600 text-white rounded text-sm">Open HRTool</Link>
+          </div>
+        </article>
+
+        <article className="p-4 border rounded dark:border-gray-600">
+          <h3 className="font-semibold dark:text-gray-100">Clean Copy</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+            Paste copied text and strip unwanted injected blocks (like AI-assistant
+            messages) between customizable start and end markers.
+          </p>
+          <div className="mt-4">
+            <Link to="/clean-copy" className="inline-block px-4 py-2 bg-violet-600 text-white rounded text-sm">Open Clean Copy</Link>
           </div>
         </article>
       </section>
